@@ -1,101 +1,233 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import faucetAbi from "./abis/Faucet.json";
+
+export default function FaucetClaim() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [currentChainId, setCurrentChainId] = useState<bigint | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [account, setAccount] = useState<string | null>(null);
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [nonce, setNonce] = useState<number>(0);
+
+  useEffect(() => {
+    const init = async () => {
+      const web3Modal = new Web3Modal({ cacheProvider: true });
+      if (web3Modal.cachedProvider) {
+        await connectWallet();
+      }
+    };
+
+    init();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", async (accounts: string[]) => {
+        if (accounts.length > 0) {
+          console.log("Cuenta cambiada:", accounts[0]);
+          setAccount(accounts[0]);
+          await connectWallet(); // Reconecta al cambiar de cuenta
+        } else {
+          logout();
+        }
+      });
+
+      window.ethereum.on("chainChanged", (_chainId: string) => {
+        window.location.reload();
+      });
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", () => {});
+        window.ethereum.removeListener("chainChanged", () => {});
+      }
+    };
+  }, []);
+
+  const connectWallet = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const web3Modal = new Web3Modal();
+      const instance = await web3Modal.connect();
+      const provider = new ethers.BrowserProvider(instance);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      const network = await provider.getNetwork();
+
+      setProvider(provider);
+      setSigner(signer);
+      setAccount(address);
+      setCurrentChainId(network.chainId);
+      setIsConnected(true);
+
+      const accountNonce = await provider.getTransactionCount(address);
+      setNonce(accountNonce);
+
+      if (network.chainId !== 41337n) {
+        await switchToLocalhost();
+      }
+    } catch (error: any) {
+      setError("No se pudo conectar a la wallet.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const claimTokens = async () => {
+    try {
+      if (!signer || !provider) {
+        setError("No estás conectado a ninguna wallet.");
+        return;
+      }
+      const address = await signer.getAddress();
+      console.log("Dirección del signer:", address);
+
+      setLoading(true);
+      setError(null);
+
+      const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+      const faucetContract = new ethers.Contract(
+        faucetAddress,
+        faucetAbi,
+        signer
+      );
+
+      // Suscribirse a los eventos del contrato
+      faucetContract.on("TokensClaimed", (user, amount) => {
+        console.log(
+          `Tokens reclamados por: ${user}, cantidad: ${amount.toString()}`
+        );
+      });
+
+      console.log("Contrato faucet conectado:", faucetContract);
+
+      // Especifica el `nonce` manualmente
+      const tx = await faucetContract.claimTokens({ nonce });
+      const receipt = await tx.wait();
+
+      console.log("receipt:", receipt);
+      console.log("Eventos emitidos:", receipt.events);
+      console.log("Transacción enviada:", tx);
+
+      setTxHash(tx.hash);
+
+      // Incrementa el `nonce` para la próxima transacción
+      setNonce(nonce + 1);
+    } catch (err: any) {
+      console.log("Error en claimTokens:", err);
+      setError(err.message || "Ocurrió un error.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setAccount(null);
+    setIsConnected(false);
+    setTxHash(null);
+    setError(null);
+    const web3Modal = new Web3Modal();
+    web3Modal.clearCachedProvider();
+  };
+
+  const switchToLocalhost = async () => {
+    try {
+      const ethereum = (window as any).ethereum;
+      if (ethereum && ethereum.isMetaMask) {
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x7A69",
+              chainName: "Hardhat Localhost",
+              nativeCurrency: {
+                name: "ETH",
+                symbol: "ETH",
+                decimals: 18,
+              },
+              rpcUrls: ["http://127.0.0.1:8545"],
+              blockExplorerUrls: [],
+            },
+          ],
+        });
+      } else {
+        setError("MetaMask no está disponible.");
+      }
+    } catch (err) {
+      setError("No se pudo cambiar a la red de Hardhat.");
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">Claim de Faucet</h1>
+        <p className="mb-4 text-gray-600 text-center">
+          Haz clic en el botón para reclamar tokens del faucet en la red de
+          Hardhat.
+        </p>
+        {!isConnected ? (
+          <button
+            onClick={connectWallet}
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-live="polite"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            {loading ? "Conectando..." : "Conectar Wallet"}
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={claimTokens}
+              disabled={loading || currentChainId !== 41337n}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-live="polite"
+            >
+              {loading ? "Reclamando..." : "Claim"}
+            </button>
+            <button
+              onClick={logout}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+              aria-live="polite"
+            >
+              Logout
+            </button>
+          </>
+        )}
+        {txHash && (
+          <div className="mt-4 p-3 bg-green-100 rounded">
+            <p className="text-green-800">
+              Transacción enviada:{" "}
+              <a
+                href={`https://etherscan.io/tx/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline break-all"
+              >
+                {txHash}
+              </a>
+            </p>
+          </div>
+        )}
+        {error && (
+          <p className="mt-4 text-red-500" role="alert">
+            {error}
+          </p>
+        )}
+        {currentChainId !== 41337n && (
+          <p className="mt-4 text-orange-500" role="alert">
+            Cambia a la red de Hardhat para reclamar los tokens.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
