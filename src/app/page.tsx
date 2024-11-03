@@ -149,6 +149,26 @@ export default function Web3TokenDashboard() {
     }
   };
 
+  const approveTokens = async (
+    amount: number,
+    tokenAddress: string,
+    spenderAddress: string,
+    signer: ethers.JsonRpcSigner
+  ) => {
+    try {
+      const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
+      const tx = await tokenContract.approve(
+        spenderAddress,
+        ethers.parseUnits(amount.toString(), 6)
+      );
+      await tx.wait();
+      console.log("Tokens aprobados:", tx);
+    } catch (error) {
+      console.error("Error al aprobar los tokens:", error);
+      throw new Error("No se pudo aprobar los tokens.");
+    }
+  };
+
   const stakeTokens = async (amount: number) => {
     const amountInTokens = ethers.parseUnits(amount.toString(), 6);
     try {
@@ -161,9 +181,15 @@ export default function Web3TokenDashboard() {
       setError(null);
 
       // Primero, aprobar los tokens para el contrato Staking
-      await approveTokens(Number(ethers.formatUnits(amountInTokens, 6)));
+      const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Dirección del token ERC-20
+      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // Dirección del contrato de staking
+      await approveTokens(
+        Number(ethers.formatUnits(amountInTokens, 6)),
+        tokenAddress,
+        stakingAddress,
+        signer
+      );
 
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
       const stakingContract = new ethers.Contract(
         stakingAddress,
         stakingAbi,
@@ -326,4 +352,7 @@ export default function Web3TokenDashboard() {
       </Card>
     </div>
   );
+}
+function logout() {
+  throw new Error("Function not implemented.");
 }
