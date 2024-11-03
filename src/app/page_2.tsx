@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import tokenAbi from "./abis/MyToken.json"; // ABI del token ERC-20
 import faucetAbi from "./abis/Faucet.json"; // ABI del contrato faucet
-import stakingAbi from "./abis/Staking.json"; // ABI del contrato Staking
 
 export default function Web3TokenDashboard() {
   const [balance, setBalance] = useState(0);
@@ -110,7 +109,7 @@ export default function Web3TokenDashboard() {
       const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
       const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
       const balance = await tokenContract.balanceOf(address);
-      setBalance(parseFloat(ethers.formatUnits(balance, 6))); // Cambiamos de 18 a 6
+      setBalance(Number(ethers.formatUnits(balance, 6))); // Cambiamos de 18 a 6
     } catch (err) {
       console.error("Error al obtener el balance del token:", err);
       setError("No se pudo obtener el balance del token.");
@@ -149,79 +148,17 @@ export default function Web3TokenDashboard() {
     }
   };
 
-  const stakeTokens = async (amount: number) => {
-    const amountInTokens = ethers.parseUnits(amount.toString(), 6);
-    try {
-      if (!signer || !provider) {
-        setError("No estás conectado a ninguna wallet.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      // Primero, aprobar los tokens para el contrato Staking
-      await approveTokens(Number(ethers.formatUnits(amountInTokens, 6)));
-
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-      const stakingContract = new ethers.Contract(
-        stakingAddress,
-        stakingAbi,
-        signer
-      );
-      const tx = await stakingContract.stake(amountInTokens);
-      const receipt = await tx.wait();
-
-      console.log("Transacción enviada:", tx);
-      console.log("Receipt:", receipt);
-
-      setTxHash(tx.hash);
-      setStakedAmount(
-        stakedAmount + Number(ethers.formatUnits(amountInTokens, 6))
-      );
-      setStakingStart(new Date());
-    } catch (err: any) {
-      console.error("Error en stakeTokens:", err);
-      setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const unstakeTokens = async () => {
-    try {
-      if (!signer || !provider) {
-        setError("No estás conectado a ninguna wallet.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-      const stakingContract = new ethers.Contract(
-        stakingAddress,
-        stakingAbi,
-        signer
-      );
-      const tx = await stakingContract.unstake();
-      const receipt = await tx.wait();
-
-      console.log("Transacción enviada:", tx);
-      console.log("Receipt:", receipt);
-
-      setTxHash(tx.hash);
-      setStakedAmount(0);
-      setStakingStart(null);
-      setStakingRewards(0);
-    } catch (err: any) {
-      console.error("Error en unstakeTokens:", err);
-      setError(
-        err.message || "Ocurrió un error al hacer unstake de los tokens."
-      );
-    } finally {
-      setLoading(false);
-    }
+  const logout = () => {
+    setAccount(null);
+    setIsConnected(false);
+    setTxHash(null);
+    setError(null);
+    setBalance(0); // Limpiar balance
+    setStakedAmount(0); // Limpiar cantidad staked
+    setStakingStart(null); // Limpiar tiempo de staking
+    setStakingRewards(0); // Limpiar recompensas
+    const web3Modal = new Web3Modal();
+    web3Modal.clearCachedProvider();
   };
 
   return (
@@ -277,22 +214,6 @@ export default function Web3TokenDashboard() {
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading ? "Reclamando..." : "Claim Tokens"}
-                </Button>
-                <Button
-                  onClick={() => stakeTokens(10)}
-                  disabled={
-                    loading || stakedAmount > 0 || currentChainId !== 41337n
-                  }
-                >
-                  {loading ? "Haciendo Stake..." : "Stake 10 Tokens"}
-                </Button>
-                <Button
-                  onClick={unstakeTokens}
-                  disabled={
-                    loading || stakedAmount === 0 || currentChainId !== 41337n
-                  }
-                >
-                  {loading ? "Haciendo Unstake..." : "Unstake Tokens"}
                 </Button>
               </div>
             </>
