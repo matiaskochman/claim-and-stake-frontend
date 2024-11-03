@@ -110,10 +110,34 @@ export default function Web3TokenDashboard() {
       const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
       const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
       const balance = await tokenContract.balanceOf(address);
-      setBalance(parseFloat(ethers.formatUnits(balance, 6))); // Cambiamos de 18 a 6
+      const stakedAmount = await fetchStakedAmount(address, signer);
+
+      // Balance real disponible restando el monto staked
+      setBalance(parseFloat(ethers.formatUnits(balance, 6)) - stakedAmount);
     } catch (err) {
       console.error("Error al obtener el balance del token:", err);
       setError("No se pudo obtener el balance del token.");
+    }
+  };
+
+  // Nueva función para obtener el monto en staking del contrato Staking
+  const fetchStakedAmount = async (
+    address: string,
+    signer: ethers.JsonRpcSigner
+  ) => {
+    try {
+      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // Dirección del contrato Staking
+      const stakingContract = new ethers.Contract(
+        stakingAddress,
+        stakingAbi,
+        signer
+      );
+      const stakedAmount = await stakingContract.stakedAmount(address); // Asumiendo que existe una función stakedAmount en el contrato
+      return parseFloat(ethers.formatUnits(stakedAmount, 6));
+    } catch (err) {
+      console.error("Error al obtener el monto staked:", err);
+      setError("No se pudo obtener el monto staked.");
+      return 0; // En caso de error, devolvemos 0 como monto staked
     }
   };
 
