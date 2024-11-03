@@ -274,6 +274,21 @@ export default function Web3TokenDashboard() {
     }
   };
 
+  const logout = () => {
+    // Limpiar los estados relacionados con la conexión de la wallet
+    setAccount(null);
+    setProvider(null);
+    setSigner(null);
+    setIsConnected(false);
+    setBalance(0);
+    setStakedAmount(0);
+    setStakingStart(null);
+    setStakingRewards(0);
+    setCurrentChainId(null);
+    setError(null);
+    setTxHash(null);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
@@ -351,6 +366,13 @@ export default function Web3TokenDashboard() {
                 >
                   {loading ? "Haciendo Unstake..." : "Unstake Tokens"}
                 </Button>
+                <Button
+                  onClick={logout}
+                  disabled={loading}
+                  className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
+                >
+                  {loading ? "Desconectando..." : "Logout"}
+                </Button>
               </div>
             </>
           )}
@@ -383,7 +405,4 @@ export default function Web3TokenDashboard() {
       </Card>
     </div>
   );
-}
-function logout() {
-  throw new Error("Function not implemented.");
 }
