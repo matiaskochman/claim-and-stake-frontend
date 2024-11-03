@@ -23,6 +23,7 @@ export default function Web3TokenDashboard() {
   const [account, setAccount] = useState<string | null>(null);
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [stakeAmount, setStakeAmount] = useState<number>(0); // Nueva variable para almacenar el monto de stake
 
   useEffect(() => {
     const init = async () => {
@@ -120,7 +121,6 @@ export default function Web3TokenDashboard() {
     }
   };
 
-  // Nueva función para obtener el monto en staking del contrato Staking
   const fetchStakedAmount = async (
     address: string,
     signer: ethers.JsonRpcSigner
@@ -193,8 +193,8 @@ export default function Web3TokenDashboard() {
     }
   };
 
-  const stakeTokens = async (amount: number) => {
-    const amountInTokens = ethers.parseUnits(amount.toString(), 6);
+  const stakeTokens = async () => {
+    const amountInTokens = ethers.parseUnits(stakeAmount.toString(), 6);
     try {
       if (!signer || !provider) {
         setError("No estás conectado a ninguna wallet.");
@@ -328,13 +328,20 @@ export default function Web3TokenDashboard() {
                 >
                   {loading ? "Reclamando..." : "Claim Tokens"}
                 </Button>
+                <input
+                  type="number"
+                  value={stakeAmount}
+                  onChange={(e) => setStakeAmount(Number(e.target.value))}
+                  placeholder="Cantidad de tokens para stake"
+                  className="w-full p-2 border rounded"
+                />
                 <Button
-                  onClick={() => stakeTokens(10)}
-                  disabled={
-                    loading || stakedAmount > 0 || currentChainId !== 41337n
-                  }
+                  onClick={stakeTokens}
+                  disabled={loading || currentChainId !== 41337n}
                 >
-                  {loading ? "Haciendo Stake..." : "Stake 10 Tokens"}
+                  {loading
+                    ? "Haciendo Stake..."
+                    : `Stake ${stakeAmount} Tokens`}
                 </Button>
                 <Button
                   onClick={unstakeTokens}
