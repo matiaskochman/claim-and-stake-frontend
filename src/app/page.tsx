@@ -1,18 +1,25 @@
 "use client";
-
 import { useState, useEffect } from "react";
+import {
+  connectWallet,
+  fetchTokenBalance,
+  claimTokens,
+  stakeTokens,
+  unstakeTokens,
+  logout,
+} from "@/utils/web3Utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import tokenAbi from "./abis/MyToken.json"; // ABI del token ERC-20
-import faucetAbi from "./abis/Faucet.json"; // ABI del contrato faucet
-import stakingAbi from "./abis/Staking.json"; // ABI del contrato Staking
+import { fetchStakedAmount } from "@/utils/web3Utils";
 
 export default function Web3TokenDashboard() {
-  const [balance, setBalance] = useState(0);
-  const [stakedAmount, setStakedAmount] = useState(0);
+  const [balance, setBalance] = useState<number>(0);
+  // const [stakedAmount, setStakedAmount] = useState(0);
+  const [stakedAmount, setStakedAmount] = useState<number>(0);
+
   const [stakingStart, setStakingStart] = useState<Date | null>(null);
   const [stakingRewards, setStakingRewards] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -23,13 +30,24 @@ export default function Web3TokenDashboard() {
   const [account, setAccount] = useState<string | null>(null);
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
-  const [stakeAmount, setStakeAmount] = useState<number>(0); // Nueva variable para almacenar el monto de stake
+  const [stakeAmount, setStakeAmount] = useState<number>(0);
+  const [unstakeAmount, setUnstakeAmount] = useState<number>(0);
 
   useEffect(() => {
     const init = async () => {
       const web3Modal = new Web3Modal({ cacheProvider: true });
       if (web3Modal.cachedProvider) {
-        await connectWallet();
+        await connectWallet(
+          setProvider,
+          setSigner,
+          setAccount,
+          setIsConnected,
+          setError,
+          setCurrentChainId,
+          setStakedAmount,
+          setBalance,
+          41337n
+        );
       }
     };
 
@@ -38,11 +56,32 @@ export default function Web3TokenDashboard() {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", async (accounts: string[]) => {
         if (accounts.length > 0) {
-          console.log("Cuenta cambiada:", accounts[0]);
           setAccount(accounts[0]);
-          await connectWallet(); // Reconecta al cambiar de cuenta
+          await connectWallet(
+            setProvider,
+            setSigner,
+            setAccount,
+            setIsConnected,
+            setError,
+            setCurrentChainId,
+            setStakedAmount,
+            setBalance,
+            41337n // Por ejemplo, si quieres que cambie a esta red
+          );
         } else {
-          logout();
+          logout(
+            setAccount,
+            setProvider,
+            setSigner,
+            setIsConnected,
+            setBalance,
+            setStakedAmount,
+            setStakingStart,
+            setStakingRewards,
+            setCurrentChainId,
+            setError,
+            setTxHash
+          );
         }
       });
 
@@ -59,236 +98,36 @@ export default function Web3TokenDashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (stakingStart && stakedAmount > 0) {
-        const elapsedHours =
-          (Date.now() - stakingStart.getTime()) / (1000 * 60 * 60);
-        const newRewards = stakedAmount * 0.01 * elapsedHours; // 1% por hora
-        setStakingRewards(newRewards);
-      }
-    }, 1000); // Actualizar cada segundo
+  const handleClaimtokens = async () => {
+    setLoading(true);
+    await claimTokens(signer, provider, setLoading, setError, setTxHash);
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
 
-    return () => clearInterval(timer);
-  }, [stakingStart, stakedAmount]);
+    setLoading(false);
+  };
+  const handleConnectWallet = async () => {
+    setLoading(true);
+    await connectWallet(
+      setProvider,
+      setSigner,
+      setAccount,
+      setIsConnected,
+      setError,
+      setCurrentChainId,
+      setStakedAmount,
+      setBalance,
+      41337n // Por ejemplo, si quieres que cambie a esta red
+    );
+    setLoading(false);
 
-  const connectWallet = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const web3Modal = new Web3Modal();
-      const instance = await web3Modal.connect();
-      const provider = new ethers.BrowserProvider(instance);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      const network = await provider.getNetwork();
-
-      setProvider(provider);
-      setSigner(signer);
-      setAccount(address);
-      setCurrentChainId(network.chainId);
-      setIsConnected(true);
-
-      if (network.chainId !== 41337n) {
-        await switchToLocalhost();
-      }
-
-      // Leer el balance del token ERC-20
-      await fetchTokenBalance(signer, address);
-    } catch (error: any) {
-      setError("No se pudo conectar a la wallet.");
-    } finally {
-      setLoading(false);
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
     }
   };
-
-  const fetchTokenBalance = async (
-    signer: ethers.JsonRpcSigner,
-    address: string
-  ) => {
-    try {
-      const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-      const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-      const balance = await tokenContract.balanceOf(address);
-      const stakedAmount = await fetchStakedAmount(address, signer);
-
-      // Balance real disponible restando el monto staked
-      setBalance(parseFloat(ethers.formatUnits(balance, 6)) - stakedAmount);
-    } catch (err) {
-      console.error("Error al obtener el balance del token:", err);
-      setError("No se pudo obtener el balance del token.");
-    }
-  };
-
-  const fetchStakedAmount = async (
-    address: string,
-    signer: ethers.JsonRpcSigner
-  ) => {
-    try {
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // Dirección del contrato Staking
-      const stakingContract = new ethers.Contract(
-        stakingAddress,
-        stakingAbi,
-        signer
-      );
-      const stakedAmount = await stakingContract.stakedAmount(address); // Asumiendo que existe una función stakedAmount en el contrato
-      return parseFloat(ethers.formatUnits(stakedAmount, 6));
-    } catch (err) {
-      console.error("Error al obtener el monto staked:", err);
-      setError("No se pudo obtener el monto staked.");
-      return 0; // En caso de error, devolvemos 0 como monto staked
-    }
-  };
-
-  const claimTokens = async () => {
-    try {
-      if (!signer || !provider) {
-        setError("No estás conectado a ninguna wallet.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-      const faucetContract = new ethers.Contract(
-        faucetAddress,
-        faucetAbi,
-        signer
-      );
-      const tx = await faucetContract.claimTokens();
-      const receipt = await tx.wait();
-
-      console.log("Transacción enviada:", tx);
-      console.log("Receipt:", receipt);
-
-      setTxHash(tx.hash);
-      await fetchTokenBalance(signer, account!); // Actualizar el balance después del claim
-    } catch (err: any) {
-      console.error("Error en claimTokens:", err);
-      setError(err.message || "Ocurrió un error al reclamar los tokens.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const approveTokens = async (
-    amount: number,
-    tokenAddress: string,
-    spenderAddress: string,
-    signer: ethers.JsonRpcSigner
-  ) => {
-    try {
-      const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-      const tx = await tokenContract.approve(
-        spenderAddress,
-        ethers.parseUnits(amount.toString(), 6)
-      );
-      await tx.wait();
-      console.log("Tokens aprobados:", tx);
-    } catch (error) {
-      console.error("Error al aprobar los tokens:", error);
-      throw new Error("No se pudo aprobar los tokens.");
-    }
-  };
-
-  const stakeTokens = async () => {
-    const amountInTokens = ethers.parseUnits(stakeAmount.toString(), 6);
-    try {
-      if (!signer || !provider) {
-        setError("No estás conectado a ninguna wallet.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      // Primero, aprobar los tokens para el contrato Staking
-      const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Dirección del token ERC-20
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"; // Dirección del contrato de staking
-      await approveTokens(
-        Number(ethers.formatUnits(amountInTokens, 6)),
-        tokenAddress,
-        stakingAddress,
-        signer
-      );
-
-      const stakingContract = new ethers.Contract(
-        stakingAddress,
-        stakingAbi,
-        signer
-      );
-      const tx = await stakingContract.stake(amountInTokens);
-      const receipt = await tx.wait();
-
-      console.log("Transacción enviada:", tx);
-      console.log("Receipt:", receipt);
-
-      setTxHash(tx.hash);
-      setStakedAmount(
-        stakedAmount + Number(ethers.formatUnits(amountInTokens, 6))
-      );
-      setStakingStart(new Date());
-    } catch (err: any) {
-      console.error("Error en stakeTokens:", err);
-      setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const unstakeTokens = async () => {
-    try {
-      if (!signer || !provider) {
-        setError("No estás conectado a ninguna wallet.");
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-      const stakingContract = new ethers.Contract(
-        stakingAddress,
-        stakingAbi,
-        signer
-      );
-      const tx = await stakingContract.unstake();
-      const receipt = await tx.wait();
-
-      console.log("Transacción enviada:", tx);
-      console.log("Receipt:", receipt);
-
-      setTxHash(tx.hash);
-      setStakedAmount(0);
-      setStakingStart(null);
-      setStakingRewards(0);
-    } catch (err: any) {
-      console.error("Error en unstakeTokens:", err);
-      setError(
-        err.message || "Ocurrió un error al hacer unstake de los tokens."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    // Limpiar los estados relacionados con la conexión de la wallet
-    setAccount(null);
-    setProvider(null);
-    setSigner(null);
-    setIsConnected(false);
-    setBalance(0);
-    setStakedAmount(0);
-    setStakingStart(null);
-    setStakingRewards(0);
-    setCurrentChainId(null);
-    setError(null);
-    setTxHash(null);
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
@@ -298,7 +137,7 @@ export default function Web3TokenDashboard() {
         <CardContent className="space-y-4">
           {!isConnected ? (
             <Button
-              onClick={connectWallet}
+              onClick={handleConnectWallet}
               disabled={loading}
               className="w-full"
             >
@@ -319,7 +158,10 @@ export default function Web3TokenDashboard() {
               <div className="flex justify-between">
                 <span>Staked Amount:</span>
                 <span className="font-bold">
-                  {stakedAmount.toFixed(2)} tokens
+                  {stakedAmount !== undefined && !isNaN(stakedAmount)
+                    ? stakedAmount.toFixed(2)
+                    : "0.00"}{" "}
+                  tokens
                 </span>
               </div>
               {stakingStart && (
@@ -338,7 +180,7 @@ export default function Web3TokenDashboard() {
               </div>
               <div className="flex flex-col space-y-2">
                 <Button
-                  onClick={claimTokens}
+                  onClick={handleClaimtokens}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading ? "Reclamando..." : "Claim Tokens"}
@@ -351,23 +193,67 @@ export default function Web3TokenDashboard() {
                   className="w-full p-2 border rounded"
                 />
                 <Button
-                  onClick={stakeTokens}
+                  onClick={() =>
+                    stakeTokens(
+                      signer,
+                      provider,
+                      stakeAmount,
+                      setLoading,
+                      setError,
+                      setTxHash,
+                      setStakedAmount,
+                      setStakingStart
+                    )
+                  }
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading
                     ? "Haciendo Stake..."
                     : `Stake ${stakeAmount} Tokens`}
                 </Button>
+                <input
+                  type="number"
+                  value={unstakeAmount}
+                  onChange={(e) => setUnstakeAmount(Number(e.target.value))}
+                  placeholder="Cantidad de tokens para unstake"
+                  className="w-full p-2 border rounded"
+                />
                 <Button
-                  onClick={unstakeTokens}
-                  disabled={
-                    loading || stakedAmount === 0 || currentChainId !== 41337n
+                  onClick={() =>
+                    unstakeTokens(
+                      signer,
+                      provider,
+                      unstakeAmount,
+                      setLoading,
+                      setError,
+                      setTxHash,
+                      setStakedAmount,
+                      setStakingStart,
+                      setStakingRewards
+                    )
                   }
+                  disabled={loading || currentChainId !== 41337n}
                 >
-                  {loading ? "Haciendo Unstake..." : "Unstake Tokens"}
+                  {loading
+                    ? "Haciendo Unstake..."
+                    : `Unstake ${unstakeAmount} Tokens`}
                 </Button>
                 <Button
-                  onClick={logout}
+                  onClick={() =>
+                    logout(
+                      setAccount,
+                      setProvider,
+                      setSigner,
+                      setIsConnected,
+                      setBalance,
+                      setStakedAmount,
+                      setStakingStart,
+                      setStakingRewards,
+                      setCurrentChainId,
+                      setError,
+                      setTxHash
+                    )
+                  }
                   disabled={loading}
                   className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
                 >
