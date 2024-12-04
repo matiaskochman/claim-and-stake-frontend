@@ -69,19 +69,7 @@ export default function Web3TokenDashboard() {
             41337n // Por ejemplo, si quieres que cambie a esta red
           );
         } else {
-          logout(
-            setAccount,
-            setProvider,
-            setSigner,
-            setIsConnected,
-            setBalance,
-            setStakedAmount,
-            setStakingStart,
-            setStakingRewards,
-            setCurrentChainId,
-            setError,
-            setTxHash
-          );
+          handleLogout();
         }
       });
 
@@ -127,6 +115,54 @@ export default function Web3TokenDashboard() {
       // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
       await fetchTokenBalance(signer, account, setBalance, setError);
     }
+  };
+  const handleUnstake = async () => {
+    await unstakeTokens(
+      signer,
+      provider,
+      unstakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleStake = async () => {
+    await stakeTokens(
+      signer,
+      provider,
+      stakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleLogout = async () => {
+    logout(
+      setAccount,
+      setProvider,
+      setSigner,
+      setIsConnected,
+      setBalance,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards,
+      setCurrentChainId,
+      setError,
+      setTxHash
+    );
   };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -193,18 +229,7 @@ export default function Web3TokenDashboard() {
                   className="w-full p-2 border rounded"
                 />
                 <Button
-                  onClick={() =>
-                    stakeTokens(
-                      signer,
-                      provider,
-                      stakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart
-                    )
-                  }
+                  onClick={handleStake}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading
@@ -219,19 +244,7 @@ export default function Web3TokenDashboard() {
                   className="w-full p-2 border rounded"
                 />
                 <Button
-                  onClick={() =>
-                    unstakeTokens(
-                      signer,
-                      provider,
-                      unstakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards
-                    )
-                  }
+                  onClick={handleUnstake}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading
@@ -239,21 +252,7 @@ export default function Web3TokenDashboard() {
                     : `Unstake ${unstakeAmount} Tokens`}
                 </Button>
                 <Button
-                  onClick={() =>
-                    logout(
-                      setAccount,
-                      setProvider,
-                      setSigner,
-                      setIsConnected,
-                      setBalance,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards,
-                      setCurrentChainId,
-                      setError,
-                      setTxHash
-                    )
-                  }
+                  onClick={handleLogout}
                   disabled={loading}
                   className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
                 >
