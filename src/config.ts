@@ -1,12 +1,17 @@
-import { http, createConfig, createStorage, createClient } from "wagmi";
+import { http, createConfig } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { defineChain } from "viem";
 
-// Definir la red personalizada localhost con chainId 41337
-const localhost = defineChain({
-  id: 41337,
-  name: "Localhost 41337",
+// Leer configuración desde variables de entorno
+const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || "41337");
+const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME || "Localhost 41337";
+const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "http://127.0.0.1:8545";
+
+// Definir la red personalizada usando variables de entorno
+const customChain = defineChain({
+  id: CHAIN_ID,
+  name: CHAIN_NAME,
   network: "localhost",
   nativeCurrency: {
     name: "Ethereum",
@@ -15,29 +20,28 @@ const localhost = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["http://127.0.0.1:8545"], // URL de tu nodo local (Hardhat, Ganache, etc.)
+      http: [RPC_URL],
     },
     public: {
-      http: ["http://127.0.0.1:8545"],
+      http: [RPC_URL],
     },
   },
   blockExplorers: {
-    default: { name: "Localhost Explorer", url: "http://127.0.0.1:8545" },
+    default: { name: "Localhost Explorer", url: RPC_URL },
   },
-  testnet: true, // Marcar como testnet
+  testnet: true,
 });
 
 // Configurar wagmi con las cadenas
 export const config = createConfig({
-  chains: [mainnet, sepolia], //localhost], // Agregar la red localhost
+  chains: [mainnet, sepolia, customChain],
 
   multiInjectedProviderDiscovery: false,
-  ssr: false, // is in server side rendering?
-  // storage: createStorage({ storage: window.localStorage }),
+  ssr: false,
   connectors: [injected(), metaMask(), safe()],
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [localhost.id]: http(), // Agregar transport para localhost
+    [customChain.id]: http(),
   },
 });

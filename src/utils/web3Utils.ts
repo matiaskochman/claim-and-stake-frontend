@@ -4,13 +4,58 @@
 
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
-import tokenAbi from "../app/abis/MyToken.json";
-import faucetAbi from "../app/abis/Faucet.json";
-import stakingAbi from "../app/abis/Staking.json";
+import tokenAbi from "../../src/abis/MyToken.json";
+import faucetAbi from "../../src/abis/Faucet.json";
+import stakingAbi from "../../src/abis/Staking.json";
+import { contracts } from "@/config/app.config";
 
-const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+// Error codes
+const ACTION_REJECTED = 0x4001; // 4001 - User rejected transaction
+const USER_DENIED = "ethers-user-denied";
+
+interface ParsedError {
+  message: string | null;
+  cancelled: boolean;
+}
+
+/**
+ * Parsea errores de Web3 y devuelve un objeto con mensaje y estado de cancelación
+ */
+export const parseWeb3Error = (err: any): ParsedError => {
+  // Usuario rechazó la transacción
+  if (
+    err.code === ACTION_REJECTED ||
+    err?.info?.error?.code === ACTION_REJECTED ||
+    err.message?.includes(USER_DENIED)
+  ) {
+    return { message: null, cancelled: true };
+  }
+
+  // Usuario rechazó (wallet switch)
+  if (err.code === 4001) {
+    return { message: null, cancelled: true };
+  }
+
+  // Error de red
+  if (err.code === 4902 || err.message?.includes("chain")) {
+    return { message: "Error de red. Por favor verifica que estás en la red correcta.", cancelled: false };
+  }
+
+  // Detectar revert específico del contrato - Ya reclamaste
+  if (
+    err.reason === "Ya reclamaste tus tokens" ||
+    err.message?.includes("Ya reclamaste tus tokens") ||
+    err.data?.message?.includes("Ya reclamaste tus tokens")
+  ) {
+    return { message: "Ya has reclamado tus tokens anteriormente.", cancelled: false };
+  }
+
+  // Otros errores
+  return { message: err.message || "Ocurrió un error inesperado.", cancelled: false };
+};
+
+// Contract addresses from config
+const { staking: stakingAddress, token: tokenAddress, faucet: faucetAddress } = contracts;
 
 export const connectWallet = async (
   setProvider: (provider: ethers.BrowserProvider | null) => void,
@@ -58,8 +103,10 @@ export const connectWallet = async (
     setStakedAmount(stakedAmount);
     // await fetchStakedAmount()
   } catch (error: any) {
-    console.log(error.message);
-    setError("No se pudo conectar a la wallet.");
+    const errorMsg = parseWeb3Error(error);
+    if (errorMsg.message) {
+      setError(errorMsg.message);
+    }
   }
 };
 
@@ -73,7 +120,11 @@ export const fetchTokenBalance = async (
   try {
     console.log("fetchTokenBalance");
 
-    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
     const balance = await tokenContract.balanceOf(address);
     console.log("balance: ", balance);
     setBalance(parseFloat(ethers.formatUnits(balance, 6)));
@@ -96,7 +147,7 @@ export const fetchStakedAmount = async (
 
     const stakingContract = new ethers.Contract(
       stakingAddress,
-      stakingAbi,
+      stakingAbi.abi,
       signer
     );
 
@@ -118,7 +169,8 @@ export const claimTokens = async (
   provider: ethers.BrowserProvider | null,
   setLoading: Function,
   setError: Function,
-  setTxHash: Function
+  setTxHash: Function,
+  setCancelled?: (cancelled: boolean) => void
   // fetchTokenBalance: Function,
   // account: string | null,
   // setBalance: Function
@@ -135,7 +187,7 @@ export const claimTokens = async (
 
     const faucetContract = new ethers.Contract(
       faucetAddress,
-      faucetAbi,
+      faucetAbi.abi,
       signer
     );
     const tx = await faucetContract.claimTokens();
@@ -148,7 +200,14 @@ export const claimTokens = async (
     // await fetchTokenBalance(signer, account, setBalance, setError);
   } catch (err: any) {
     console.error("Error en claimTokens:", err);
-    setError(err.message || "Ocurrió un error al reclamar los tokens.");
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+    if (parsed.cancelled && setCancelled) {
+      setCancelled(true);
+      setTimeout(() => setCancelled(false), 2000);
+    }
   } finally {
     setLoading(false);
   }
@@ -162,7 +221,7 @@ export const approveTokens = async (
   signer: ethers.JsonRpcSigner
 ) => {
   console.log("approveTokens");
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
+  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi.abi, signer);
   const tx = await tokenContract.approve(
     spenderAddress,
     ethers.parseUnits(amount.toString(), 6)
@@ -180,7 +239,8 @@ export const stakeTokens = async (
   setError: Function,
   setTxHash: Function,
   setStakedAmount: Function,
-  setStakingStart: Function
+  setStakingStart: Function,
+  setCancelled?: (cancelled: boolean) => void
 ) => {
   console.log("stakeTokens");
   if (!signer || !provider) {
@@ -188,10 +248,9 @@ export const stakeTokens = async (
     return;
   }
 
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
   const stakingContract = new ethers.Contract(
-    stakingAddress,
-    stakingAbi,
+    contracts.staking,
+    stakingAbi.abi,
     signer
   );
   const amountInTokens = ethers.parseUnits(amount.toString(), 6);
@@ -202,8 +261,8 @@ export const stakeTokens = async (
 
     await approveTokens(
       amount,
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      stakingAddress,
+      contracts.token,
+      contracts.staking,
       signer
     );
     const tx = await stakingContract.stake(amountInTokens);
@@ -217,7 +276,14 @@ export const stakeTokens = async (
     setStakingStart(new Date());
   } catch (err: any) {
     console.error("Error en stakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+    if (parsed.cancelled && setCancelled) {
+      setCancelled(true);
+      setTimeout(() => setCancelled(false), 2000);
+    }
   } finally {
     setLoading(false);
   }
@@ -225,7 +291,6 @@ export const stakeTokens = async (
 
 // Función para hacer unstake de tokens
 
-// Función para hacer unstake de tokens
 export const unstakeTokens = async (
   signer: ethers.JsonRpcSigner | null,
   provider: ethers.BrowserProvider | null,
@@ -235,18 +300,18 @@ export const unstakeTokens = async (
   setTxHash: Function,
   setStakedAmount: Function,
   setStakingStart: Function,
-  setStakingRewards: Function
+  setStakingRewards: Function,
+  setCancelled?: (cancelled: boolean) => void
 ) => {
-  console.log("unstakeTokens");
+  console.log("Iniciando proceso de unstakeTokens...");
   if (!signer || !provider) {
     setError("No estás conectado a ninguna wallet.");
     return;
   }
 
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
   const stakingContract = new ethers.Contract(
     stakingAddress,
-    stakingAbi,
+    stakingAbi.abi,
     signer
   );
 
@@ -256,13 +321,32 @@ export const unstakeTokens = async (
 
     // Obtener la dirección del usuario
     const userAddress = await signer.getAddress();
+    console.log("Dirección del usuario:", userAddress);
 
     // Consultar el stakedAmount desde el contrato
     const stakedAmountBigNumber: bigint = await stakingContract.getStakedAmount(
       userAddress
     );
+    console.log(
+      "Monto staked actual (en wei):",
+      stakedAmountBigNumber.toString()
+    );
+
     const stakedAmount = parseFloat(
       ethers.formatUnits(stakedAmountBigNumber, 6)
+    );
+    console.log("Monto staked actual (formateado):", stakedAmount);
+
+    console.log(`Intentando hacer unstake de ${amount} tokens.`);
+
+    // Verificar el balance del contrato de staking
+    const stakingContractBalance = await checkStakingContractBalance(
+      signer,
+      setError
+    );
+    console.log(
+      "Balance del contrato de staking disponible:",
+      stakingContractBalance
     );
 
     // Validar que el usuario tiene suficiente stakedAmount para hacer unstake
@@ -274,10 +358,11 @@ export const unstakeTokens = async (
       return;
     }
 
+    const valueToUnstake = ethers.parseUnits(amount.toString(), 6);
+    console.log("Cantidad a desapostar (en wei):", valueToUnstake.toString());
+
     // Realizar la transacción de unstake
-    const tx = await stakingContract.unstake(
-      ethers.parseUnits(amount.toString(), 6)
-    );
+    const tx = await stakingContract.unstake(valueToUnstake);
     const receipt = await tx.wait();
 
     console.log("Transacción enviada:", tx);
@@ -293,9 +378,74 @@ export const unstakeTokens = async (
     }
   } catch (err: any) {
     console.error("Error en unstakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer unstake de los tokens.");
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+    if (parsed.cancelled && setCancelled) {
+      setCancelled(true);
+      setTimeout(() => setCancelled(false), 2000);
+    }
   } finally {
     setLoading(false);
+  }
+};
+export const fetchHasClaimed = async (
+  address: string,
+  signer: ethers.JsonRpcSigner,
+  setError: (message: string) => void
+): Promise<boolean> => {
+  try {
+    console.log("fetchHasClaimed");
+    if (!ethers.isAddress(address)) {
+      throw new Error("Dirección inválida.");
+    }
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const hasClaimed = await faucetContract.hasClaimed(address);
+    console.log("hasClaimed:", hasClaimed);
+    return hasClaimed;
+  } catch (err) {
+    console.error("Error al verificar si ya reclamó:", err);
+    setError("No se pudo verificar el estado del claim.");
+    return false; // Devuelve false como valor seguro en caso de error
+  }
+};
+
+export const checkStakingContractBalance = async (
+  signer: ethers.JsonRpcSigner,
+  setError: Function
+) => {
+  try {
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+    const stakingBalance = await tokenContract.balanceOf(stakingAddress);
+    console.log(
+      "Balance del contrato de staking (en wei):",
+      stakingBalance.toString()
+    );
+
+    const stakingBalanceFormatted = parseFloat(
+      ethers.formatUnits(stakingBalance, 6)
+    );
+    console.log(
+      "Balance del contrato de staking (formateado):",
+      stakingBalanceFormatted
+    );
+
+    return stakingBalanceFormatted;
+  } catch (err) {
+    console.error("Error al obtener el balance del contrato de staking:", err);
+    setError("No se pudo obtener el balance del contrato de staking.");
+    return 0;
   }
 };
 

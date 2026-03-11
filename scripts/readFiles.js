@@ -11,7 +11,7 @@ import { join, relative } from "path";
 // Directorios y configuraciones
 const srcDir = join(process.cwd(), "src");
 const outputFile = join(process.cwd(), "output.txt");
-const excludeDirs = ["fonts"];
+const excludeDirs = ["fonts", "components", "abis"];
 const excludeFiles = ["favicon.ico"];
 const rootFiles = [
   "tsconfig.json",
@@ -55,20 +55,20 @@ const copyToOutputFile = (dir) => {
 copyToOutputFile(srcDir);
 
 // Procesar archivos de la raíz
-rootFiles.forEach((file) => {
-  const filePath = join(process.cwd(), file);
+// rootFiles.forEach((file) => {
+//   const filePath = join(process.cwd(), file);
 
-  if (existsSync(filePath)) {
-    const relativePath = relative(process.cwd(), filePath);
-    const fileContent = readFileSync(filePath, "utf-8");
+//   if (existsSync(filePath)) {
+//     const relativePath = relative(process.cwd(), filePath);
+//     const fileContent = readFileSync(filePath, "utf-8");
 
-    // Agregar el path del archivo y el contenido al archivo de salida
-    writeFileSync(
-      outputFile,
-      `// Path: ${relativePath}\n\n${fileContent}\n\n`,
-      { flag: "a" }
-    );
-  }
-});
+//     // Agregar el path del archivo y el contenido al archivo de salida
+//     writeFileSync(
+//       outputFile,
+//       `// Path: ${relativePath}\n\n${fileContent}\n\n`,
+//       { flag: "a" }
+//     );
+//   }
+// });
 
 console.log(`Todos los archivos han sido copiados a ${outputFile}`);

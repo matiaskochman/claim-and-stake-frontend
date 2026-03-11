@@ -1,4710 +1,1063 @@
 // Path: src/app/abis/Faucet.json
 
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "ClaimRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TokensClaimed",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "claimAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "hasClaimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-
-// Path: src/app/abis/MyToken.json
-
-[
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "BeforeMint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
-    ],
-    "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "subtractedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "decreaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "addedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "increaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-
-// Path: src/app/abis/Staking.json
-
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Staked",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
-      }
-    ],
-    "name": "Unstaked",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "REWARD_RATE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "calculateReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakeInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "stake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "stakes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "unstake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-
-// Path: src/app/components/Profile.tsx
-
-"use client";
-import { useAccount, useEnsName } from "wagmi";
-
-export function Profile() {
-  const { address } = useAccount();
-  const { data, error, status } = useEnsName({ address });
-  if (status === "pending") return <div>Loading ENS name</div>;
-  if (status === "error")
-    return <div>Error fetching ENS name: {error.message}</div>;
-  return <div>ENS name: {data}</div>;
-}
-
-
-// Path: src/app/components/ReadContract.tsx
-
-import { useReadContract } from "wagmi";
-import { config } from "../../config";
-export function ReadContract() {
-  const { data: balance } = useReadContract({
-    ...config,
-    functionName: "balanceOf",
-    args: ["0x03A71968491d55603FFe1b11A9e23eF013f75bCF"],
-  });
-
-  return <div>Balance: {balance?.toString()}</div>;
-}
-
-
-// Path: src/app/components/WagmiClientProvider.tsx
-
-"use client";
-
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { config } from "../../config";
-
-const queryClient = new QueryClient();
-export function WagmiClientProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
-}
-
-
-// Path: src/app/components/WalletOptions.tsx
-
-import * as React from "react";
-import { useConnect } from "wagmi";
-
-export function WalletOptions() {
-  const { connectors, connect } = useConnect();
-
-  return connectors.map((connector) => (
-    <button key={connector.uid} onClick={() => connect({ connector })}>
-      {connector.name}
-    </button>
-  ));
-}
-
-
-// Path: src/app/globals.css
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-
-// Path: src/app/layout.tsx
-
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { WagmiClientProvider } from "./components/WagmiClientProvider";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { WagmiProvider } from "wagmi";
-// import { config } from "../config";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated by create next app",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <WagmiClientProvider>{children}</WagmiClientProvider>
-      </body>
-    </html>
-  );
-}
-
-
-// Path: src/app/page.tsx
-
-"use client";
-import { useState, useEffect } from "react";
-import {
-  connectWallet,
-  fetchTokenBalance,
-  claimTokens,
-  stakeTokens,
-  unstakeTokens,
-  logout,
-} from "@/utils/web3Utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDistanceToNow } from "date-fns";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { fetchStakedAmount } from "@/utils/web3Utils";
-
-export default function Web3TokenDashboard() {
-  const [balance, setBalance] = useState(0);
-  // const [stakedAmount, setStakedAmount] = useState(0);
-  const [stakedAmount, setStakedAmount] = useState<number>(0);
-
-  const [stakingStart, setStakingStart] = useState<Date | null>(null);
-  const [stakingRewards, setStakingRewards] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const [currentChainId, setCurrentChainId] = useState<bigint | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [account, setAccount] = useState<string | null>(null);
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
-  const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const [unstakeAmount, setUnstakeAmount] = useState<number>(0);
-
-  useEffect(() => {
-    const init = async () => {
-      const web3Modal = new Web3Modal({ cacheProvider: true });
-      if (web3Modal.cachedProvider) {
-        await connectWallet(
-          setLoading,
-          setError,
-          setProvider,
-          setSigner,
-          setAccount,
-          setCurrentChainId,
-          setIsConnected,
-          (signer, address) =>
-            fetchTokenBalance(
-              signer,
-              address,
-              setBalance,
-              setError,
-              fetchStakedAmount
-            ),
-          setBalance,
-          fetchStakedAmount
-        );
-      }
-    };
-
-    init();
-
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", async (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          await connectWallet(
-            setLoading,
-            setError,
-            setProvider,
-            setSigner,
-            setAccount,
-            setCurrentChainId,
-            setIsConnected,
-            (signer: ethers.JsonRpcSigner, address: string) =>
-              fetchTokenBalance(
-                signer,
-                address,
-                setBalance,
-                setError,
-                fetchStakedAmount
-              )
-          );
-        } else {
-          logout(
-            setAccount,
-            setProvider,
-            setSigner,
-            setIsConnected,
-            setBalance,
-            setStakedAmount,
-            setStakingStart,
-            setStakingRewards,
-            setCurrentChainId,
-            setError,
-            setTxHash
-          );
-        }
-      });
-
-      window.ethereum.on("chainChanged", (_chainId: string) => {
-        window.location.reload();
-      });
-    }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", () => {});
-        window.ethereum.removeListener("chainChanged", () => {});
-      }
-    };
-  }, []);
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Web3 Token Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!isConnected ? (
-            <Button
-              onClick={() =>
-                connectWallet(
-                  setLoading,
-                  setError,
-                  setProvider,
-                  setSigner,
-                  setAccount,
-                  setCurrentChainId,
-                  setIsConnected,
-                  (signer: ethers.JsonRpcSigner, address: string) =>
-                    fetchTokenBalance(
-                      signer,
-                      address,
-                      setBalance,
-                      setError,
-                      fetchStakedAmount
-                    )
-                )
-              }
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "Conectando..." : "Conectar Wallet"}
-            </Button>
-          ) : (
-            <>
-              <div className="flex justify-between">
-                <span>Cuenta:</span>
-                <span className="font-bold">
-                  {account?.slice(0, 6)}...{account?.slice(-4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Balance:</span>
-                <span className="font-bold">{balance.toFixed(2)} tokens</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Staked Amount:</span>
-                <span className="font-bold">
-                  {stakedAmount !== undefined && !isNaN(stakedAmount)
-                    ? stakedAmount.toFixed(2)
-                    : "0.00"}{" "}
-                  tokens
-                </span>
-              </div>
-              {stakingStart && (
-                <div className="flex justify-between">
-                  <span>Staking Time:</span>
-                  <span className="font-bold">
-                    {formatDistanceToNow(stakingStart)}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span>Staking Rewards:</span>
-                <span className="font-bold">
-                  {stakingRewards.toFixed(2)} tokens
-                </span>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Button
-                  onClick={() =>
-                    claimTokens(
-                      signer,
-                      provider,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      (signer, address) =>
-                        fetchTokenBalance(
-                          signer,
-                          address,
-                          setBalance,
-                          setError,
-                          fetchStakedAmount
-                        ),
-                      account,
-                      setBalance,
-                      fetchStakedAmount
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading ? "Reclamando..." : "Claim Tokens"}
-                </Button>
-                <input
-                  type="number"
-                  value={stakeAmount}
-                  onChange={(e) => setStakeAmount(Number(e.target.value))}
-                  placeholder="Cantidad de tokens para stake"
-                  className="w-full p-2 border rounded"
-                />
-                <Button
-                  onClick={() =>
-                    stakeTokens(
-                      signer,
-                      provider,
-                      stakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading
-                    ? "Haciendo Stake..."
-                    : `Stake ${stakeAmount} Tokens`}
-                </Button>
-                <input
-                  type="number"
-                  value={unstakeAmount}
-                  onChange={(e) => setUnstakeAmount(Number(e.target.value))}
-                  placeholder="Cantidad de tokens para unstake"
-                  className="w-full p-2 border rounded"
-                />
-                <Button
-                  onClick={() =>
-                    unstakeTokens(
-                      signer,
-                      provider,
-                      unstakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading
-                    ? "Haciendo Unstake..."
-                    : `Unstake ${unstakeAmount} Tokens`}
-                </Button>
-                <Button
-                  onClick={() =>
-                    logout(
-                      setAccount,
-                      setProvider,
-                      setSigner,
-                      setIsConnected,
-                      setBalance,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards,
-                      setCurrentChainId,
-                      setError,
-                      setTxHash
-                    )
-                  }
-                  disabled={loading}
-                  className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
-                >
-                  {loading ? "Desconectando..." : "Logout"}
-                </Button>
-              </div>
-            </>
-          )}
-          {txHash && (
-            <div className="p-3 bg-green-100 rounded">
-              <p className="text-green-800">
-                Transacción enviada:{" "}
-                <a
-                  href={`https://etherscan.io/tx/${txHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline break-all"
-                >
-                  {txHash}
-                </a>
-              </p>
-            </div>
-          )}
-          {error && (
-            <p className="text-red-500" role="alert">
-              {error}
-            </p>
-          )}
-          {currentChainId !== 41337n && (
-            <p className="text-orange-500" role="alert">
-              Cambia a la red de Hardhat para reclamar los tokens.
-            </p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-
-// Path: src/app/pages/wagmi/page.tsx
-
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { ethers } from "ethers";
-// import { Profile } from "@/app/components/Profile";
-// import { WalletOptions } from "@/app/components/WalletOptions";
-// // import { ReadContract } from "@/app/components/ReadContract";
-// import { useAccount, useEnsName } from "wagmi";
-
-// export default function FaucetClaim() {
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-//   const [txHash, setTxHash] = useState<string | null>(null);
-//   const [currentChainId, setCurrentChainId] = useState<bigint | null>(null);
-
-//   const claimTokens = async () => {
-//     try {
-//       setLoading(true);
-//       setError(null);
-//       console.log("Iniciando proceso de claim...");
-
-//       const ethereum = (window as any).ethereum;
-
-//       if (ethereum && ethereum.isMetaMask) {
-//         console.log("MetaMask detectada.");
-//         const provider = new ethers.BrowserProvider(ethereum);
-//         console.log("Provider creado:", provider);
-
-//         const signer = await provider.getSigner();
-//         console.log("Signer creado:", signer);
-
-//         const network = await provider.getNetwork();
-//         const chainId = network.chainId;
-//         console.log("Red actual (chainId):", chainId);
-
-//         if (chainId !== BigInt(31337)) {
-//           console.log("Red incorrecta, cambiando a Hardhat localhost...");
-//           await switchToLocalhost();
-//         }
-
-//         const faucetAddress = "0xTuDireccionDelFaucet"; // Cambia por la dirección real del contrato
-//         const abi = ["function claim() public"];
-
-//         const faucetContract = new ethers.Contract(faucetAddress, abi, signer);
-//         console.log("Contrato faucet conectado:", faucetContract);
-
-//         const tx = await faucetContract.claim();
-//         console.log("Transacción enviada:", tx);
-
-//         await tx.wait();
-//         console.log("Transacción confirmada.");
-
-//         setTxHash(tx.hash);
-//       } else {
-//         console.log("MetaMask no detectada o no es MetaMask.");
-//         setError("MetaMask no está instalada o no es la billetera activa.");
-//       }
-//     } catch (err: any) {
-//       console.log("Error en claimTokens:", err);
-//       setError(err.message || "Ocurrió un error.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const switchToLocalhost = async () => {
-//     try {
-//       const ethereum = (window as any).ethereum;
-
-//       if (ethereum && ethereum.isMetaMask) {
-//         console.log("Solicitando cambio a Hardhat localhost...");
-//         await ethereum.request({
-//           method: "wallet_addEthereumChain",
-//           params: [
-//             {
-//               chainId: "0x7A69",
-//               chainName: "Hardhat Localhost",
-//               nativeCurrency: {
-//                 name: "ETH",
-//                 symbol: "ETH",
-//                 decimals: 18,
-//               },
-//               rpcUrls: ["http://127.0.0.1:8545"],
-//               blockExplorerUrls: [],
-//             },
-//           ],
-//         });
-//         console.log("Red cambiada a Hardhat localhost.");
-//       } else {
-//         console.log("MetaMask no está disponible.");
-//         setError("MetaMask no está disponible.");
-//       }
-//     } catch (err) {
-//       console.log("Error en switchToLocalhost:", err);
-//       setError("No se pudo cambiar a la red de Hardhat.");
-//     }
-//   };
-
-//   useEffect(() => {
-//     const checkNetwork = async () => {
-//       try {
-//         const ethereum = (window as any).ethereum;
-
-//         if (ethereum && ethereum.isMetaMask) {
-//           console.log("Verificando red actual...");
-//           const provider = new ethers.BrowserProvider(ethereum);
-//           console.log("Provider disponible:", provider);
-
-//           const network = await provider.getNetwork();
-//           const chainId = network.chainId;
-//           console.log("Red detectada:", chainId);
-//           setCurrentChainId(chainId);
-
-//           if (chainId !== BigInt(31337)) {
-//             console.log("Red incorrecta, cambiando a Hardhat...");
-//             await switchToLocalhost();
-//           }
-//         } else {
-//           console.log("MetaMask no detectada.");
-//           setError("MetaMask no está disponible.");
-//         }
-//       } catch (err) {
-//         console.log("Error en checkNetwork:", err);
-//         setError("Error al verificar la red.");
-//       }
-//     };
-//     checkNetwork();
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-//       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-//         <h1 className="text-2xl font-bold mb-4 text-center">Claim de Faucet</h1>
-//         <p className="mb-4 text-gray-600 text-center">
-//           Haz clic en el botón para reclamar tokens del faucet en la red de
-//           Hardhat.
-//         </p>
-//         <button
-//           onClick={claimTokens}
-//           disabled={loading || currentChainId !== BigInt(31337)}
-//           className="w-full bg-green-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
-//           aria-live="polite"
-//         >
-//           {loading ? "Reclamando..." : "Claim"}
-//         </button>
-//         {error && (
-//           <p className="mt-4 text-red-500" role="alert">
-//             {error}
-//           </p>
-//         )}
-//         {currentChainId !== BigInt(31337) && (
-//           <p className="mt-4 text-orange-500" role="alert">
-//             Cambia a la red de Hardhat para reclamar los tokens.
-//           </p>
-//         )}
-//       </div>
-//       <div>
-//         <Profile />
-//         <WalletOptions />
-//         {/* <ReadContract /> */}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// Path: src/components/ui/button.tsx
-
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
-
-export { Button, buttonVariants }
-
-
-// Path: src/components/ui/card.tsx
-
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
-Card.displayName = "Card"
-
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
-))
-CardHeader.displayName = "CardHeader"
-
-const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-))
-CardTitle.displayName = "CardTitle"
-
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-CardDescription.displayName = "CardDescription"
-
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
-
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props}
-  />
-))
-CardFooter.displayName = "CardFooter"
-
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
-
-
-// Path: src/config.ts
-
-import { http, createConfig, createStorage, createClient } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
-import { injected, metaMask, safe } from "wagmi/connectors";
-import { defineChain } from "viem";
-
-// Definir la red personalizada localhost con chainId 41337
-const localhost = defineChain({
-  id: 41337,
-  name: "Localhost 41337",
-  network: "localhost",
-  nativeCurrency: {
-    name: "Ethereum",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["http://127.0.0.1:8545"], // URL de tu nodo local (Hardhat, Ganache, etc.)
-    },
-    public: {
-      http: ["http://127.0.0.1:8545"],
-    },
-  },
-  blockExplorers: {
-    default: { name: "Localhost Explorer", url: "http://127.0.0.1:8545" },
-  },
-  testnet: true, // Marcar como testnet
-});
-
-// Configurar wagmi con las cadenas
-export const config = createConfig({
-  chains: [mainnet, sepolia], //localhost], // Agregar la red localhost
-
-  multiInjectedProviderDiscovery: false,
-  ssr: false, // is in server side rendering?
-  // storage: createStorage({ storage: window.localStorage }),
-  connectors: [injected(), metaMask(), safe()],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [localhost.id]: http(), // Agregar transport para localhost
-  },
-});
-
-
-// Path: src/lib/utils.ts
-
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-
-// Path: src/utils/web3Utils.ts
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
-// utils/web3Utils.ts
-
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import tokenAbi from "../app/abis/MyToken.json";
-import faucetAbi from "../app/abis/Faucet.json";
-import stakingAbi from "../app/abis/Staking.json";
-
-// Función para conectar la wallet
-export const connectWallet = async (
-  setLoading: Function,
-  setError: Function,
-  setProvider: Function,
-  setSigner: Function,
-  setAccount: Function,
-  setCurrentChainId: Function,
-  setIsConnected: Function,
-  fetchTokenBalance: (
-    signer: ethers.JsonRpcSigner,
-    address: string,
-    setBalance: Function,
-    setError: Function,
-    fetchStakedAmount: Function
-  ) => Promise<void>, // Tipo de la función fetchTokenBalance
-  setBalance: Function,
-  fetchStakedAmount: Function
-) => {
-  try {
-    setLoading(true);
-    setError(null);
-
-    const web3Modal = new Web3Modal();
-    const instance = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(instance);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
-    const network = await provider.getNetwork();
-
-    setProvider(provider);
-    setSigner(signer);
-    setAccount(address);
-    setCurrentChainId(network.chainId);
-    setIsConnected(true);
-
-    if (network.chainId !== 41337n) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0xA1B9" }], // 41337 en hexadecimal
-        });
-        // Red cambiada exitosamente
-      } catch (switchError: any) {
-        // Error al cambiar de red
-        if (switchError.code === 4902) {
-          // La red no está disponible en MetaMask, se debe agregar
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: "0xA1B9", // 41337 en hexadecimal
-                  chainName: "Nombre de la Red",
-                  rpcUrls: [
-                    "https://direccion.rpc",
-                  ] /* ...otros parámetros necesarios... */,
-                },
-              ],
-            });
-            // Red agregada y cambiada exitosamente
-          } catch (addError) {
-            // Manejar error al agregar la red
-            console.error("Error al agregar la red:", addError);
-          }
-        } else {
-          console.error("Error al cambiar de red:", switchError);
-        }
-      }
-    }
-
-    await fetchTokenBalance(
-      signer,
-      address,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
-  } catch (error: any) {
-    console.log(error.message);
-    setError("No se pudo conectar a la wallet.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para obtener el balance del token
-export const fetchTokenBalance = async (
-  signer: ethers.JsonRpcSigner,
-  address: string,
-  setBalance: Function,
-  setError: Function,
-  fetchStakedAmount: Function
-) => {
-  try {
-    const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-    const balance = await tokenContract.balanceOf(address);
-    const stakedAmount = await fetchStakedAmount(address, signer, setError);
-
-    setBalance(parseFloat(ethers.formatUnits(balance, 6)) - stakedAmount);
-  } catch (err) {
-    console.error("Error al obtener el balance del token:", err);
-    setError("No se pudo obtener el balance del token.");
-  }
-};
-
-// Función para obtener el monto staked
-// export const fetchStakedAmount = async (
-//   address: string,
-//   signer: ethers.JsonRpcSigner,
-//   setError: Function
-// ) => {
-//   try {
-//     const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-//     const stakingContract = new ethers.Contract(
-//       stakingAddress,
-//       stakingAbi,
-//       signer
-//     );
-//     const stakedAmount = await stakingContract.getStakedAmount(address);
-//     return parseFloat(ethers.formatUnits(stakedAmount, 6));
-//   } catch (err) {
-//     console.error("Error al obtener el monto staked:", err);
-//     setError("No se pudo obtener el monto staked.");
-//     return 0;
-//   }
-// };
-export const fetchStakedAmount = async (
-  address: string,
-  signer: ethers.JsonRpcSigner,
-  setError: (message: string) => void
-): Promise<number> => {
-  try {
-    if (!ethers.isAddress(address)) {
-      throw new Error("Dirección inválida.");
-    }
-
-    const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-    const stakingContract = new ethers.Contract(
-      stakingAddress,
-      stakingAbi,
-      signer
-    );
-
-    const stakedAmount = await stakingContract.getStakedAmount(address);
-
-    if (!stakedAmount) {
-      throw new Error("El contrato no retornó un valor válido.");
-    }
-
-    // Convertir el monto a un número flotante con 6 decimales
-    return parseFloat(ethers.formatUnits(stakedAmount, 6));
-  } catch (err) {
-    console.error("Error al obtener el monto staked:", err);
-    setError("No se pudo obtener el monto staked.");
-    return 0; // Devuelve 0 como valor seguro en caso de error
-  }
-};
-
-// Función para reclamar tokens
-export const claimTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  fetchTokenBalance: Function,
-  account: string | null,
-  setBalance: Function,
-  fetchStakedAmount: Function
-  // signer: ethers.JsonRpcSigner | null,
-  // provider: ethers.BrowserProvider | null,
-  // setLoading: Function,
-  // setError: Function,
-  // setTxHash: Function,
-  // fetchTokenBalance: Function,
-  // account: string | null,
-  // setBalance: Function,
-  // fetchStakedAmount: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-    const faucetContract = new ethers.Contract(
-      faucetAddress,
-      faucetAbi,
-      signer
-    );
-    const tx = await faucetContract.claimTokens();
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    await fetchTokenBalance(
-      signer,
-      account!,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
-  } catch (err: any) {
-    console.error("Error en claimTokens:", err);
-    setError(err.message || "Ocurrió un error al reclamar los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para aprobar tokens
-export const approveTokens = async (
-  amount: number,
-  tokenAddress: string,
-  spenderAddress: string,
-  signer: ethers.JsonRpcSigner
-) => {
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-  const tx = await tokenContract.approve(
-    spenderAddress,
-    ethers.parseUnits(amount.toString(), 6)
-  );
-  await tx.wait();
-  console.log("Tokens aprobados:", tx);
-};
-
-// Función para hacer stake de tokens
-export const stakeTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  amount: number,
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-  const stakingContract = new ethers.Contract(
-    stakingAddress,
-    stakingAbi,
-    signer
-  );
-  const amountInTokens = ethers.parseUnits(amount.toString(), 6);
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    await approveTokens(
-      amount,
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      stakingAddress,
-      signer
-    );
-    const tx = await stakingContract.stake(amountInTokens);
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    setStakedAmount((prev: number) => prev + amount);
-    setStakingStart(new Date());
-  } catch (err: any) {
-    console.error("Error en stakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para hacer unstake de tokens
-export const unstakeTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  amount: number,
-  stakedAmount: number, // <-- Añadir este parámetro
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function,
-  setStakingRewards: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-  const stakingContract = new ethers.Contract(
-    stakingAddress,
-    stakingAbi,
-    signer
-  );
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    const tx = await stakingContract.unstake(
-      ethers.parseUnits(amount.toString(), 6)
-    );
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    setStakedAmount((prev: number) => prev - amount);
-    if (amount >= stakedAmount) {
-      setStakingStart(null);
-      setStakingRewards(0);
-    }
-  } catch (err: any) {
-    console.error("Error en unstakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer unstake de los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para desconectar la wallet
-export const logout = (
-  setAccount: Function,
-  setProvider: Function,
-  setSigner: Function,
-  setIsConnected: Function,
-  setBalance: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function,
-  setStakingRewards: Function,
-  setCurrentChainId: Function,
-  setError: Function,
-  setTxHash: Function
-) => {
-  setAccount(null);
-  setProvider(null);
-  setSigner(null);
-  setIsConnected(false);
-  setBalance(0);
-  setStakedAmount(0);
-  setStakingStart(null);
-  setStakingRewards(0);
-  setCurrentChainId(null);
-  setError(null);
-  setTxHash(null);
-};
-
-
-// Path: tsconfig.json
-
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["src/components/*"]
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Faucet",
+  "sourceName": "contracts/Faucet.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "claimer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokensClaimed",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "claimAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "claimTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "hasClaimed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
-}
-
-
-// Path: package.json
-
-{
-  "name": "token_erc20_nextjs_faucet",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.1.0",
-    "@shadcn/ui": "^0.0.4",
-    "@tanstack/react-query": "^5.59.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "ethers": "^6.13.3",
-    "install": "^0.13.0",
-    "lucide-react": "^0.454.0",
-    "next": "14.2.14",
-    "npm": "^10.8.3",
-    "react": "^18",
-    "react-dom": "^18",
-    "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7",
-    "viem": "^2.21.17",
-    "wagmi": "^2.12.16",
-    "web3modal": "^1.9.12"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.14",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
-}
-
-
-// Path: next.config.mjs
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
-
-
-// Path: tailwind.config.ts
-
-import type { Config } from "tailwindcss";
-
-const config: Config = {
-    darkMode: ["class"],
-    content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: {
-  	extend: {
-  		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		}
-  	}
-  },
-  plugins: [require("tailwindcss-animate")],
-};
-export default config;
-
-
-// Path: src/app/abis/Faucet.json
-
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "ClaimRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TokensClaimed",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "claimAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "hasClaimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-
-// Path: src/app/abis/MyToken.json
-
-[
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "BeforeMint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
-    ],
-    "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "subtractedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "decreaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "addedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "increaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-
-// Path: src/app/abis/Staking.json
-
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Staked",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
-      }
-    ],
-    "name": "Unstaked",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "REWARD_RATE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "calculateReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakeInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "stake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "stakes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "unstake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-
-// Path: src/app/components/Profile.tsx
-
-"use client";
-import { useAccount, useEnsName } from "wagmi";
-
-export function Profile() {
-  const { address } = useAccount();
-  const { data, error, status } = useEnsName({ address });
-  if (status === "pending") return <div>Loading ENS name</div>;
-  if (status === "error")
-    return <div>Error fetching ENS name: {error.message}</div>;
-  return <div>ENS name: {data}</div>;
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
 
-// Path: src/app/components/ReadContract.tsx
-
-import { useReadContract } from "wagmi";
-import { config } from "../../config";
-export function ReadContract() {
-  const { data: balance } = useReadContract({
-    ...config,
-    functionName: "balanceOf",
-    args: ["0x03A71968491d55603FFe1b11A9e23eF013f75bCF"],
-  });
-
-  return <div>Balance: {balance?.toString()}</div>;
-}
-
-
-// Path: src/app/components/WagmiClientProvider.tsx
-
-"use client";
-
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { config } from "../../config";
-
-const queryClient = new QueryClient();
-export function WagmiClientProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
-}
-
-
-// Path: src/app/components/WalletOptions.tsx
-
-import * as React from "react";
-import { useConnect } from "wagmi";
-
-export function WalletOptions() {
-  const { connectors, connect } = useConnect();
-
-  return connectors.map((connector) => (
-    <button key={connector.uid} onClick={() => connect({ connector })}>
-      {connector.name}
-    </button>
-  ));
-}
-
-
-// Path: src/app/globals.css
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-
-// Path: src/app/layout.tsx
-
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { WagmiClientProvider } from "./components/WagmiClientProvider";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { WagmiProvider } from "wagmi";
-// import { config } from "../config";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated by create next app",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <WagmiClientProvider>{children}</WagmiClientProvider>
-      </body>
-    </html>
-  );
-}
-
-
-// Path: src/app/page.tsx
-
-"use client";
-import { useState, useEffect } from "react";
-import {
-  connectWallet,
-  fetchTokenBalance,
-  claimTokens,
-  stakeTokens,
-  unstakeTokens,
-  logout,
-} from "@/utils/web3Utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDistanceToNow } from "date-fns";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { fetchStakedAmount } from "@/utils/web3Utils";
-
-export default function Web3TokenDashboard() {
-  const [balance, setBalance] = useState(0);
-  // const [stakedAmount, setStakedAmount] = useState(0);
-  const [stakedAmount, setStakedAmount] = useState<number>(0);
-
-  const [stakingStart, setStakingStart] = useState<Date | null>(null);
-  const [stakingRewards, setStakingRewards] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const [currentChainId, setCurrentChainId] = useState<bigint | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [account, setAccount] = useState<string | null>(null);
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
-  const [stakeAmount, setStakeAmount] = useState<number>(0);
-  const [unstakeAmount, setUnstakeAmount] = useState<number>(0);
-
-  useEffect(() => {
-    const init = async () => {
-      const web3Modal = new Web3Modal({ cacheProvider: true });
-      if (web3Modal.cachedProvider) {
-        await connectWallet(
-          setLoading,
-          setError,
-          setProvider,
-          setSigner,
-          setAccount,
-          setCurrentChainId,
-          setIsConnected,
-          (signer, address) =>
-            fetchTokenBalance(
-              signer,
-              address,
-              setBalance,
-              setError,
-              fetchStakedAmount
-            ),
-          setBalance,
-          fetchStakedAmount
-        );
-      }
-    };
-
-    init();
-
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", async (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          await connectWallet(
-            setLoading,
-            setError,
-            setProvider,
-            setSigner,
-            setAccount,
-            setCurrentChainId,
-            setIsConnected,
-            (signer: ethers.JsonRpcSigner, address: string) =>
-              fetchTokenBalance(
-                signer,
-                address,
-                setBalance,
-                setError,
-                fetchStakedAmount
-              )
-          );
-        } else {
-          logout(
-            setAccount,
-            setProvider,
-            setSigner,
-            setIsConnected,
-            setBalance,
-            setStakedAmount,
-            setStakingStart,
-            setStakingRewards,
-            setCurrentChainId,
-            setError,
-            setTxHash
-          );
-        }
-      });
-
-      window.ethereum.on("chainChanged", (_chainId: string) => {
-        window.location.reload();
-      });
-    }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", () => {});
-        window.ethereum.removeListener("chainChanged", () => {});
-      }
-    };
-  }, []);
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Web3 Token Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!isConnected ? (
-            <Button
-              onClick={() =>
-                connectWallet(
-                  setLoading,
-                  setError,
-                  setProvider,
-                  setSigner,
-                  setAccount,
-                  setCurrentChainId,
-                  setIsConnected,
-                  (signer: ethers.JsonRpcSigner, address: string) =>
-                    fetchTokenBalance(
-                      signer,
-                      address,
-                      setBalance,
-                      setError,
-                      fetchStakedAmount
-                    )
-                )
-              }
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "Conectando..." : "Conectar Wallet"}
-            </Button>
-          ) : (
-            <>
-              <div className="flex justify-between">
-                <span>Cuenta:</span>
-                <span className="font-bold">
-                  {account?.slice(0, 6)}...{account?.slice(-4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Balance:</span>
-                <span className="font-bold">{balance.toFixed(2)} tokens</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Staked Amount:</span>
-                <span className="font-bold">
-                  {stakedAmount !== undefined && !isNaN(stakedAmount)
-                    ? stakedAmount.toFixed(2)
-                    : "0.00"}{" "}
-                  tokens
-                </span>
-              </div>
-              {stakingStart && (
-                <div className="flex justify-between">
-                  <span>Staking Time:</span>
-                  <span className="font-bold">
-                    {formatDistanceToNow(stakingStart)}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span>Staking Rewards:</span>
-                <span className="font-bold">
-                  {stakingRewards.toFixed(2)} tokens
-                </span>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Button
-                  onClick={() =>
-                    claimTokens(
-                      signer,
-                      provider,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      (signer, address) =>
-                        fetchTokenBalance(
-                          signer,
-                          address,
-                          setBalance,
-                          setError,
-                          fetchStakedAmount
-                        ),
-                      account,
-                      setBalance,
-                      fetchStakedAmount
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading ? "Reclamando..." : "Claim Tokens"}
-                </Button>
-                <input
-                  type="number"
-                  value={stakeAmount}
-                  onChange={(e) => setStakeAmount(Number(e.target.value))}
-                  placeholder="Cantidad de tokens para stake"
-                  className="w-full p-2 border rounded"
-                />
-                <Button
-                  onClick={() =>
-                    stakeTokens(
-                      signer,
-                      provider,
-                      stakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading
-                    ? "Haciendo Stake..."
-                    : `Stake ${stakeAmount} Tokens`}
-                </Button>
-                <input
-                  type="number"
-                  value={unstakeAmount}
-                  onChange={(e) => setUnstakeAmount(Number(e.target.value))}
-                  placeholder="Cantidad de tokens para unstake"
-                  className="w-full p-2 border rounded"
-                />
-                <Button
-                  onClick={() =>
-                    unstakeTokens(
-                      signer,
-                      provider,
-                      unstakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards
-                    )
-                  }
-                  disabled={loading || currentChainId !== 41337n}
-                >
-                  {loading
-                    ? "Haciendo Unstake..."
-                    : `Unstake ${unstakeAmount} Tokens`}
-                </Button>
-                <Button
-                  onClick={() =>
-                    logout(
-                      setAccount,
-                      setProvider,
-                      setSigner,
-                      setIsConnected,
-                      setBalance,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards,
-                      setCurrentChainId,
-                      setError,
-                      setTxHash
-                    )
-                  }
-                  disabled={loading}
-                  className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
-                >
-                  {loading ? "Desconectando..." : "Logout"}
-                </Button>
-              </div>
-            </>
-          )}
-          {txHash && (
-            <div className="p-3 bg-green-100 rounded">
-              <p className="text-green-800">
-                Transacción enviada:{" "}
-                <a
-                  href={`https://etherscan.io/tx/${txHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline break-all"
-                >
-                  {txHash}
-                </a>
-              </p>
-            </div>
-          )}
-          {error && (
-            <p className="text-red-500" role="alert">
-              {error}
-            </p>
-          )}
-          {currentChainId !== 41337n && (
-            <p className="text-orange-500" role="alert">
-              Cambia a la red de Hardhat para reclamar los tokens.
-            </p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-
-// Path: src/components/ui/button.tsx
-
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
-
-export { Button, buttonVariants }
-
-
-// Path: src/components/ui/card.tsx
-
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
-Card.displayName = "Card"
-
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
-))
-CardHeader.displayName = "CardHeader"
-
-const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-))
-CardTitle.displayName = "CardTitle"
-
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-CardDescription.displayName = "CardDescription"
-
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
-
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props}
-  />
-))
-CardFooter.displayName = "CardFooter"
-
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
-
-
-// Path: src/config.ts
-
-import { http, createConfig, createStorage, createClient } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
-import { injected, metaMask, safe } from "wagmi/connectors";
-import { defineChain } from "viem";
-
-// Definir la red personalizada localhost con chainId 41337
-const localhost = defineChain({
-  id: 41337,
-  name: "Localhost 41337",
-  network: "localhost",
-  nativeCurrency: {
-    name: "Ethereum",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["http://127.0.0.1:8545"], // URL de tu nodo local (Hardhat, Ganache, etc.)
-    },
-    public: {
-      http: ["http://127.0.0.1:8545"],
-    },
-  },
-  blockExplorers: {
-    default: { name: "Localhost Explorer", url: "http://127.0.0.1:8545" },
-  },
-  testnet: true, // Marcar como testnet
-});
-
-// Configurar wagmi con las cadenas
-export const config = createConfig({
-  chains: [mainnet, sepolia], //localhost], // Agregar la red localhost
-
-  multiInjectedProviderDiscovery: false,
-  ssr: false, // is in server side rendering?
-  // storage: createStorage({ storage: window.localStorage }),
-  connectors: [injected(), metaMask(), safe()],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [localhost.id]: http(), // Agregar transport para localhost
-  },
-});
-
-
-// Path: src/lib/utils.ts
-
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-
-// Path: src/utils/web3Utils.ts
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
-// utils/web3Utils.ts
-
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import tokenAbi from "../app/abis/MyToken.json";
-import faucetAbi from "../app/abis/Faucet.json";
-import stakingAbi from "../app/abis/Staking.json";
-
-// Función para conectar la wallet
-export const connectWallet = async (
-  setLoading: Function,
-  setError: Function,
-  setProvider: Function,
-  setSigner: Function,
-  setAccount: Function,
-  setCurrentChainId: Function,
-  setIsConnected: Function,
-  fetchTokenBalance: (
-    signer: ethers.JsonRpcSigner,
-    address: string,
-    setBalance: Function,
-    setError: Function,
-    fetchStakedAmount: Function
-  ) => Promise<void>, // Tipo de la función fetchTokenBalance
-  setBalance: Function,
-  fetchStakedAmount: Function
-) => {
-  try {
-    setLoading(true);
-    setError(null);
-
-    const web3Modal = new Web3Modal();
-    const instance = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(instance);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
-    const network = await provider.getNetwork();
-
-    setProvider(provider);
-    setSigner(signer);
-    setAccount(address);
-    setCurrentChainId(network.chainId);
-    setIsConnected(true);
-
-    if (network.chainId !== 41337n) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0xA1B9" }], // 41337 en hexadecimal
-        });
-        // Red cambiada exitosamente
-      } catch (switchError: any) {
-        // Error al cambiar de red
-        if (switchError.code === 4902) {
-          // La red no está disponible en MetaMask, se debe agregar
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: "0xA1B9", // 41337 en hexadecimal
-                  chainName: "Nombre de la Red",
-                  rpcUrls: [
-                    "https://direccion.rpc",
-                  ] /* ...otros parámetros necesarios... */,
-                },
-              ],
-            });
-            // Red agregada y cambiada exitosamente
-          } catch (addError) {
-            // Manejar error al agregar la red
-            console.error("Error al agregar la red:", addError);
-          }
-        } else {
-          console.error("Error al cambiar de red:", switchError);
-        }
-      }
-    }
-
-    await fetchTokenBalance(
-      signer,
-      address,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
-  } catch (error: any) {
-    console.log(error.message);
-    setError("No se pudo conectar a la wallet.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para obtener el balance del token
-export const fetchTokenBalance = async (
-  signer: ethers.JsonRpcSigner,
-  address: string,
-  setBalance: Function,
-  setError: Function,
-  fetchStakedAmount: Function
-) => {
-  try {
-    const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-    const balance = await tokenContract.balanceOf(address);
-    const stakedAmount = await fetchStakedAmount(address, signer, setError);
-
-    setBalance(parseFloat(ethers.formatUnits(balance, 6)) - stakedAmount);
-  } catch (err) {
-    console.error("Error al obtener el balance del token:", err);
-    setError("No se pudo obtener el balance del token.");
-  }
-};
-
-// Función para obtener el monto staked
-// export const fetchStakedAmount = async (
-//   address: string,
-//   signer: ethers.JsonRpcSigner,
-//   setError: Function
-// ) => {
-//   try {
-//     const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-//     const stakingContract = new ethers.Contract(
-//       stakingAddress,
-//       stakingAbi,
-//       signer
-//     );
-//     const stakedAmount = await stakingContract.getStakedAmount(address);
-//     return parseFloat(ethers.formatUnits(stakedAmount, 6));
-//   } catch (err) {
-//     console.error("Error al obtener el monto staked:", err);
-//     setError("No se pudo obtener el monto staked.");
-//     return 0;
-//   }
-// };
-export const fetchStakedAmount = async (
-  address: string,
-  signer: ethers.JsonRpcSigner,
-  setError: (message: string) => void
-): Promise<number> => {
-  try {
-    if (!ethers.isAddress(address)) {
-      throw new Error("Dirección inválida.");
-    }
-
-    const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-    const stakingContract = new ethers.Contract(
-      stakingAddress,
-      stakingAbi,
-      signer
-    );
-
-    const stakedAmount = await stakingContract.getStakedAmount(address);
-
-    if (!stakedAmount) {
-      throw new Error("El contrato no retornó un valor válido.");
-    }
-
-    // Convertir el monto a un número flotante con 6 decimales
-    return parseFloat(ethers.formatUnits(stakedAmount, 6));
-  } catch (err) {
-    console.error("Error al obtener el monto staked:", err);
-    setError("No se pudo obtener el monto staked.");
-    return 0; // Devuelve 0 como valor seguro en caso de error
-  }
-};
-
-// Función para reclamar tokens
-export const claimTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  fetchTokenBalance: Function,
-  account: string | null,
-  setBalance: Function,
-  fetchStakedAmount: Function
-  // signer: ethers.JsonRpcSigner | null,
-  // provider: ethers.BrowserProvider | null,
-  // setLoading: Function,
-  // setError: Function,
-  // setTxHash: Function,
-  // fetchTokenBalance: Function,
-  // account: string | null,
-  // setBalance: Function,
-  // fetchStakedAmount: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-    const faucetContract = new ethers.Contract(
-      faucetAddress,
-      faucetAbi,
-      signer
-    );
-    const tx = await faucetContract.claimTokens();
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    await fetchTokenBalance(
-      signer,
-      account!,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
-  } catch (err: any) {
-    console.error("Error en claimTokens:", err);
-    setError(err.message || "Ocurrió un error al reclamar los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para aprobar tokens
-export const approveTokens = async (
-  amount: number,
-  tokenAddress: string,
-  spenderAddress: string,
-  signer: ethers.JsonRpcSigner
-) => {
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-  const tx = await tokenContract.approve(
-    spenderAddress,
-    ethers.parseUnits(amount.toString(), 6)
-  );
-  await tx.wait();
-  console.log("Tokens aprobados:", tx);
-};
-
-// Función para hacer stake de tokens
-export const stakeTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  amount: number,
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-  const stakingContract = new ethers.Contract(
-    stakingAddress,
-    stakingAbi,
-    signer
-  );
-  const amountInTokens = ethers.parseUnits(amount.toString(), 6);
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    await approveTokens(
-      amount,
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      stakingAddress,
-      signer
-    );
-    const tx = await stakingContract.stake(amountInTokens);
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    setStakedAmount((prev: number) => prev + amount);
-    setStakingStart(new Date());
-  } catch (err: any) {
-    console.error("Error en stakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para hacer unstake de tokens
-export const unstakeTokens = async (
-  signer: ethers.JsonRpcSigner | null,
-  provider: ethers.BrowserProvider | null,
-  amount: number,
-  stakedAmount: number, // <-- Añadir este parámetro
-  setLoading: Function,
-  setError: Function,
-  setTxHash: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function,
-  setStakingRewards: Function
-) => {
-  if (!signer || !provider) {
-    setError("No estás conectado a ninguna wallet.");
-    return;
-  }
-
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-  const stakingContract = new ethers.Contract(
-    stakingAddress,
-    stakingAbi,
-    signer
-  );
-
-  try {
-    setLoading(true);
-    setError(null);
-
-    const tx = await stakingContract.unstake(
-      ethers.parseUnits(amount.toString(), 6)
-    );
-    const receipt = await tx.wait();
-
-    console.log("Transacción enviada:", tx);
-    console.log("Receipt:", receipt);
-
-    setTxHash(tx.hash);
-    setStakedAmount((prev: number) => prev - amount);
-    if (amount >= stakedAmount) {
-      setStakingStart(null);
-      setStakingRewards(0);
-    }
-  } catch (err: any) {
-    console.error("Error en unstakeTokens:", err);
-    setError(err.message || "Ocurrió un error al hacer unstake de los tokens.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Función para desconectar la wallet
-export const logout = (
-  setAccount: Function,
-  setProvider: Function,
-  setSigner: Function,
-  setIsConnected: Function,
-  setBalance: Function,
-  setStakedAmount: Function,
-  setStakingStart: Function,
-  setStakingRewards: Function,
-  setCurrentChainId: Function,
-  setError: Function,
-  setTxHash: Function
-) => {
-  setAccount(null);
-  setProvider(null);
-  setSigner(null);
-  setIsConnected(false);
-  setBalance(0);
-  setStakedAmount(0);
-  setStakingStart(null);
-  setStakingRewards(0);
-  setCurrentChainId(null);
-  setError(null);
-  setTxHash(null);
-};
-
-
-// Path: tsconfig.json
+// Path: src/app/abis/IMyToken.json
 
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["src/components/*"]
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IMyToken",
+  "sourceName": "contracts/Stake.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
-}
-
-
-// Path: package.json
-
-{
-  "name": "token_erc20_nextjs_faucet",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.1.0",
-    "@shadcn/ui": "^0.0.4",
-    "@tanstack/react-query": "^5.59.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "ethers": "^6.13.3",
-    "install": "^0.13.0",
-    "lucide-react": "^0.454.0",
-    "next": "14.2.14",
-    "npm": "^10.8.3",
-    "react": "^18",
-    "react-dom": "^18",
-    "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7",
-    "viem": "^2.21.17",
-    "wagmi": "^2.12.16",
-    "web3modal": "^1.9.12"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.14",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
-}
-
-
-// Path: next.config.mjs
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
-
-
-// Path: tailwind.config.ts
-
-import type { Config } from "tailwindcss";
-
-const config: Config = {
-    darkMode: ["class"],
-    content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: {
-  	extend: {
-  		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		}
-  	}
-  },
-  plugins: [require("tailwindcss-animate")],
-};
-export default config;
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
 
-
-// Path: src/app/abis/Faucet.json
-
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "ClaimRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TokensClaimed",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "claimAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "hasClaimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
 
 // Path: src/app/abis/MyToken.json
 
-[
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "BeforeMint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
-    ],
-    "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "subtractedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "decreaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "addedValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "increaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MyToken",
+  "sourceName": "contracts/MyToken.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MINTER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "subtractedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "decreaseAllowance",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "addedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "increaseAllowance",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
+
 
 // Path: src/app/abis/Staking.json
 
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Staked",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "reward",
-        "type": "uint256"
-      }
-    ],
-    "name": "Unstaked",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "REWARD_RATE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "calculateReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakeInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "stake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "stakes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "since",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract MyToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "unstake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Staking",
+  "sourceName": "contracts/Stake.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        }
+      ],
+      "name": "calculateReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMyStakedAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        }
+      ],
+      "name": "getStakeInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Staking.StakeInfo",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "staker",
+          "type": "address"
+        }
+      ],
+      "name": "getStakedAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "stakes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IMyToken",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "unstake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
+
 
 // Path: src/app/components/Profile.tsx
 
@@ -4919,7 +1272,7 @@ import Web3Modal from "web3modal";
 import { fetchStakedAmount } from "@/utils/web3Utils";
 
 export default function Web3TokenDashboard() {
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState<number>(0);
   // const [stakedAmount, setStakedAmount] = useState(0);
   const [stakedAmount, setStakedAmount] = useState<number>(0);
 
@@ -4941,23 +1294,15 @@ export default function Web3TokenDashboard() {
       const web3Modal = new Web3Modal({ cacheProvider: true });
       if (web3Modal.cachedProvider) {
         await connectWallet(
-          setLoading,
-          setError,
           setProvider,
           setSigner,
           setAccount,
-          setCurrentChainId,
           setIsConnected,
-          (signer, address) =>
-            fetchTokenBalance(
-              signer,
-              address,
-              setBalance,
-              setError,
-              fetchStakedAmount
-            ),
+          setError,
+          setCurrentChainId,
+          setStakedAmount,
           setBalance,
-          fetchStakedAmount
+          41337n
         );
       }
     };
@@ -4969,36 +1314,18 @@ export default function Web3TokenDashboard() {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
           await connectWallet(
-            setLoading,
-            setError,
             setProvider,
             setSigner,
             setAccount,
-            setCurrentChainId,
             setIsConnected,
-            (signer: ethers.JsonRpcSigner, address: string) =>
-              fetchTokenBalance(
-                signer,
-                address,
-                setBalance,
-                setError,
-                fetchStakedAmount
-              )
+            setError,
+            setCurrentChainId,
+            setStakedAmount,
+            setBalance,
+            41337n // Por ejemplo, si quieres que cambie a esta red
           );
         } else {
-          logout(
-            setAccount,
-            setProvider,
-            setSigner,
-            setIsConnected,
-            setBalance,
-            setStakedAmount,
-            setStakingStart,
-            setStakingRewards,
-            setCurrentChainId,
-            setError,
-            setTxHash
-          );
+          handleLogout();
         }
       });
 
@@ -5015,6 +1342,84 @@ export default function Web3TokenDashboard() {
     };
   }, []);
 
+  const handleClaimtokens = async () => {
+    setLoading(true);
+    await claimTokens(signer, provider, setLoading, setError, setTxHash);
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+
+    setLoading(false);
+  };
+  const handleConnectWallet = async () => {
+    setLoading(true);
+    await connectWallet(
+      setProvider,
+      setSigner,
+      setAccount,
+      setIsConnected,
+      setError,
+      setCurrentChainId,
+      setStakedAmount,
+      setBalance,
+      41337n // Por ejemplo, si quieres que cambie a esta red
+    );
+    setLoading(false);
+
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleUnstake = async () => {
+    await unstakeTokens(
+      signer,
+      provider,
+      unstakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleStake = async () => {
+    await stakeTokens(
+      signer,
+      provider,
+      stakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleLogout = async () => {
+    logout(
+      setAccount,
+      setProvider,
+      setSigner,
+      setIsConnected,
+      setBalance,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards,
+      setCurrentChainId,
+      setError,
+      setTxHash
+    );
+  };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
@@ -5024,25 +1429,7 @@ export default function Web3TokenDashboard() {
         <CardContent className="space-y-4">
           {!isConnected ? (
             <Button
-              onClick={() =>
-                connectWallet(
-                  setLoading,
-                  setError,
-                  setProvider,
-                  setSigner,
-                  setAccount,
-                  setCurrentChainId,
-                  setIsConnected,
-                  (signer: ethers.JsonRpcSigner, address: string) =>
-                    fetchTokenBalance(
-                      signer,
-                      address,
-                      setBalance,
-                      setError,
-                      fetchStakedAmount
-                    )
-                )
-              }
+              onClick={handleConnectWallet}
               disabled={loading}
               className="w-full"
             >
@@ -5085,26 +1472,7 @@ export default function Web3TokenDashboard() {
               </div>
               <div className="flex flex-col space-y-2">
                 <Button
-                  onClick={() =>
-                    claimTokens(
-                      signer,
-                      provider,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      (signer, address) =>
-                        fetchTokenBalance(
-                          signer,
-                          address,
-                          setBalance,
-                          setError,
-                          fetchStakedAmount
-                        ),
-                      account,
-                      setBalance,
-                      fetchStakedAmount
-                    )
-                  }
+                  onClick={handleClaimtokens}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading ? "Reclamando..." : "Claim Tokens"}
@@ -5117,18 +1485,7 @@ export default function Web3TokenDashboard() {
                   className="w-full p-2 border rounded"
                 />
                 <Button
-                  onClick={() =>
-                    stakeTokens(
-                      signer,
-                      provider,
-                      stakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart
-                    )
-                  }
+                  onClick={handleStake}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading
@@ -5143,19 +1500,7 @@ export default function Web3TokenDashboard() {
                   className="w-full p-2 border rounded"
                 />
                 <Button
-                  onClick={() =>
-                    unstakeTokens(
-                      signer,
-                      provider,
-                      unstakeAmount,
-                      setLoading,
-                      setError,
-                      setTxHash,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards
-                    )
-                  }
+                  onClick={handleUnstake}
                   disabled={loading || currentChainId !== 41337n}
                 >
                   {loading
@@ -5163,21 +1508,7 @@ export default function Web3TokenDashboard() {
                     : `Unstake ${unstakeAmount} Tokens`}
                 </Button>
                 <Button
-                  onClick={() =>
-                    logout(
-                      setAccount,
-                      setProvider,
-                      setSigner,
-                      setIsConnected,
-                      setBalance,
-                      setStakedAmount,
-                      setStakingStart,
-                      setStakingRewards,
-                      setCurrentChainId,
-                      setError,
-                      setTxHash
-                    )
-                  }
+                  onClick={handleLogout}
                   disabled={loading}
                   className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
                 >
@@ -5430,121 +1761,23 @@ import tokenAbi from "../app/abis/MyToken.json";
 import faucetAbi from "../app/abis/Faucet.json";
 import stakingAbi from "../app/abis/Staking.json";
 
-// Función para conectar la wallet
-// export const connectWallet = async (
-//   setLoading: Function,
-//   setError: Function,
-//   setProvider: Function,
-//   setSigner: Function,
-//   setAccount: Function,
-//   setCurrentChainId: Function,
-//   setIsConnected: Function,
-//   fetchTokenBalance: (
-//     signer: ethers.JsonRpcSigner,
-//     address: string,
-//     setBalance: Function,
-//     setError: Function,
-//     fetchStakedAmount: Function
-//   ) => Promise<void>, // Tipo de la función fetchTokenBalance
-//   setBalance: Function,
-//   fetchStakedAmount: Function
-// ) => {
-//   try {
-//     setLoading(true);
-//     setError(null);
+const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
-//     const web3Modal = new Web3Modal();
-//     const instance = await web3Modal.connect();
-//     const provider = new ethers.BrowserProvider(instance);
-//     const signer = await provider.getSigner();
-//     const address = await signer.getAddress();
-//     const network = await provider.getNetwork();
-
-//     setProvider(provider);
-//     setSigner(signer);
-//     setAccount(address);
-//     setCurrentChainId(network.chainId);
-//     setIsConnected(true);
-
-//     if (network.chainId !== 41337n) {
-//       try {
-//         await window.ethereum.request({
-//           method: "wallet_switchEthereumChain",
-//           params: [{ chainId: "0xA1B9" }], // 41337 en hexadecimal
-//         });
-//         // Red cambiada exitosamente
-//       } catch (switchError: any) {
-//         // Error al cambiar de red
-//         if (switchError.code === 4902) {
-//           // La red no está disponible en MetaMask, se debe agregar
-//           try {
-//             await window.ethereum.request({
-//               method: "wallet_addEthereumChain",
-//               params: [
-//                 {
-//                   chainId: "0xA1B9", // 41337 en hexadecimal
-//                   chainName: "Nombre de la Red",
-//                   rpcUrls: [
-//                     "https://direccion.rpc",
-//                   ] /* ...otros parámetros necesarios... */,
-//                 },
-//               ],
-//             });
-//             // Red agregada y cambiada exitosamente
-//           } catch (addError) {
-//             // Manejar error al agregar la red
-//             console.error("Error al agregar la red:", addError);
-//           }
-//         } else {
-//           console.error("Error al cambiar de red:", switchError);
-//         }
-//       }
-//     }
-
-//     await fetchTokenBalance(
-//       signer,
-//       address,
-//       setBalance,
-//       setError,
-//       fetchStakedAmount
-//     );
-//   } catch (error: any) {
-//     console.log(error.message);
-//     setError("No se pudo conectar a la wallet.");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 export const connectWallet = async (
-  setLoading: (loading: boolean) => void,
-  setError: (error: string | null) => void,
   setProvider: (provider: ethers.BrowserProvider | null) => void,
   setSigner: (signer: ethers.JsonRpcSigner | null) => void,
   setAccount: (account: string | null) => void,
-  setCurrentChainId: (chainId: bigint | null) => void,
   setIsConnected: (isConnected: boolean) => void,
-  fetchTokenBalance: (
-    signer: ethers.JsonRpcSigner,
-    address: string,
-    setBalance: (balance: number) => void,
-    setError: (error: string | null) => void,
-    fetchStakedAmount: (
-      address: string,
-      signer: ethers.JsonRpcSigner,
-      setError: (error: string) => void
-    ) => Promise<number>
-  ) => Promise<void>,
+  setError: (error: string | null) => void,
+  setCurrentChainId: (chain: bigint | null) => void,
+  setStakedAmount: (amount: number) => void,
   setBalance: (balance: number) => void,
-  fetchStakedAmount: (
-    address: string,
-    signer: ethers.JsonRpcSigner,
-    setError: (error: string) => void
-  ) => Promise<number>
+  desiredChainId: bigint
 ) => {
   try {
-    setLoading(true);
-    setError(null);
-
+    console.log("connectWallet");
     const web3Modal = new Web3Modal();
     const instance = await web3Modal.connect();
     const provider = new ethers.BrowserProvider(instance);
@@ -5552,68 +1785,34 @@ export const connectWallet = async (
     const address = await signer.getAddress();
     const network = await provider.getNetwork();
 
+    // Si se especifica un chainId deseado y es diferente al actual, intentar cambiar de red
+    if (desiredChainId && network.chainId !== desiredChainId) {
+      try {
+        const chainId = `0x${desiredChainId.toString(16)}`;
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
+        });
+        setCurrentChainId(BigInt(chainId));
+      } catch (switchError: any) {
+        console.error("Error al cambiar de red:", switchError);
+        setError("No se pudo cambiar a la red deseada.");
+        return;
+      }
+    }
+    setCurrentChainId(BigInt(desiredChainId));
     setProvider(provider);
     setSigner(signer);
     setAccount(address);
-    setCurrentChainId(network.chainId);
     setIsConnected(true);
-
-    if (network.chainId !== 41337n) {
-      // Usar número en lugar de BigInt
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0xA1B9" }], // 41337 en hexadecimal
-        });
-        // Red cambiada exitosamente
-        setCurrentChainId(41337n);
-      } catch (switchError: any) {
-        // Error al cambiar de red
-        if (switchError.code === 4902) {
-          // La red no está disponible en MetaMask, se debe agregar
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: "0xA1B9", // 41337 en hexadecimal
-                  chainName: "Localhost 41337",
-                  nativeCurrency: {
-                    name: "Ethereum",
-                    symbol: "ETH",
-                    decimals: 18,
-                  },
-                  rpcUrls: ["http://127.0.0.1:8545"], // URL de tu nodo local
-                  blockExplorerUrls: [],
-                },
-              ],
-            });
-            // Red agregada y cambiada exitosamente
-            setCurrentChainId(41337n);
-          } catch (addError) {
-            // Manejar error al agregar la red
-            console.error("Error al agregar la red:", addError);
-            setError("No se pudo agregar la red personalizada.");
-          }
-        } else {
-          console.error("Error al cambiar de red:", switchError);
-          setError("No se pudo cambiar a la red personalizada.");
-        }
-      }
-    }
-
-    await fetchTokenBalance(
-      signer,
-      address,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
+    setError(null);
+    await fetchTokenBalance(signer, address, setBalance, setError);
+    const stakedAmount = await fetchStakedAmount(address, signer, setError);
+    setStakedAmount(stakedAmount);
+    // await fetchStakedAmount()
   } catch (error: any) {
     console.log(error.message);
     setError("No se pudo conectar a la wallet.");
-  } finally {
-    setLoading(false);
   }
 };
 
@@ -5622,68 +1821,47 @@ export const fetchTokenBalance = async (
   signer: ethers.JsonRpcSigner,
   address: string,
   setBalance: Function,
-  setError: Function,
-  fetchStakedAmount: Function
+  setError: Function
 ) => {
   try {
-    const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
-    const balance = await tokenContract.balanceOf(address);
-    const stakedAmount = await fetchStakedAmount(address, signer, setError);
+    console.log("fetchTokenBalance");
 
-    setBalance(parseFloat(ethers.formatUnits(balance, 6)) - stakedAmount);
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+    const balance = await tokenContract.balanceOf(address);
+    console.log("balance: ", balance);
+    setBalance(parseFloat(ethers.formatUnits(balance, 6)));
   } catch (err) {
     console.error("Error al obtener el balance del token:", err);
     setError("No se pudo obtener el balance del token.");
   }
 };
 
-// Función para obtener el monto staked
-// export const fetchStakedAmount = async (
-//   address: string,
-//   signer: ethers.JsonRpcSigner,
-//   setError: Function
-// ) => {
-//   try {
-//     const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-//     const stakingContract = new ethers.Contract(
-//       stakingAddress,
-//       stakingAbi,
-//       signer
-//     );
-//     const stakedAmount = await stakingContract.getStakedAmount(address);
-//     return parseFloat(ethers.formatUnits(stakedAmount, 6));
-//   } catch (err) {
-//     console.error("Error al obtener el monto staked:", err);
-//     setError("No se pudo obtener el monto staked.");
-//     return 0;
-//   }
-// };
 export const fetchStakedAmount = async (
   address: string,
   signer: ethers.JsonRpcSigner,
   setError: (message: string) => void
 ): Promise<number> => {
   try {
+    console.log("fetchStakedAmount");
     if (!ethers.isAddress(address)) {
       throw new Error("Dirección inválida.");
     }
 
-    const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
     const stakingContract = new ethers.Contract(
       stakingAddress,
-      stakingAbi,
+      stakingAbi.abi,
       signer
     );
 
     const stakedAmount = await stakingContract.getStakedAmount(address);
 
-    if (!stakedAmount) {
-      throw new Error("El contrato no retornó un valor válido.");
-    }
-
     // Convertir el monto a un número flotante con 6 decimales
-    return parseFloat(ethers.formatUnits(stakedAmount, 6));
+    const staked = parseFloat(ethers.formatUnits(stakedAmount, 6));
+    return staked;
   } catch (err) {
     console.error("Error al obtener el monto staked:", err);
     setError("No se pudo obtener el monto staked.");
@@ -5697,21 +1875,12 @@ export const claimTokens = async (
   provider: ethers.BrowserProvider | null,
   setLoading: Function,
   setError: Function,
-  setTxHash: Function,
-  fetchTokenBalance: Function,
-  account: string | null,
-  setBalance: Function,
-  fetchStakedAmount: Function
-  // signer: ethers.JsonRpcSigner | null,
-  // provider: ethers.BrowserProvider | null,
-  // setLoading: Function,
-  // setError: Function,
-  // setTxHash: Function,
+  setTxHash: Function
   // fetchTokenBalance: Function,
   // account: string | null,
-  // setBalance: Function,
-  // fetchStakedAmount: Function
+  // setBalance: Function
 ) => {
+  console.log("claimTokens");
   if (!signer || !provider) {
     setError("No estás conectado a ninguna wallet.");
     return;
@@ -5721,10 +1890,9 @@ export const claimTokens = async (
     setLoading(true);
     setError(null);
 
-    const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
     const faucetContract = new ethers.Contract(
       faucetAddress,
-      faucetAbi,
+      faucetAbi.abi,
       signer
     );
     const tx = await faucetContract.claimTokens();
@@ -5734,13 +1902,7 @@ export const claimTokens = async (
     console.log("Receipt:", receipt);
 
     setTxHash(tx.hash);
-    await fetchTokenBalance(
-      signer,
-      account!,
-      setBalance,
-      setError,
-      fetchStakedAmount
-    );
+    // await fetchTokenBalance(signer, account, setBalance, setError);
   } catch (err: any) {
     console.error("Error en claimTokens:", err);
     setError(err.message || "Ocurrió un error al reclamar los tokens.");
@@ -5756,7 +1918,8 @@ export const approveTokens = async (
   spenderAddress: string,
   signer: ethers.JsonRpcSigner
 ) => {
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
+  console.log("approveTokens");
+  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi.abi, signer);
   const tx = await tokenContract.approve(
     spenderAddress,
     ethers.parseUnits(amount.toString(), 6)
@@ -5776,6 +1939,7 @@ export const stakeTokens = async (
   setStakedAmount: Function,
   setStakingStart: Function
 ) => {
+  console.log("stakeTokens");
   if (!signer || !provider) {
     setError("No estás conectado a ninguna wallet.");
     return;
@@ -5784,7 +1948,7 @@ export const stakeTokens = async (
   const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
   const stakingContract = new ethers.Contract(
     stakingAddress,
-    stakingAbi,
+    stakingAbi.abi,
     signer
   );
   const amountInTokens = ethers.parseUnits(amount.toString(), 6);
@@ -5818,7 +1982,6 @@ export const stakeTokens = async (
 
 // Función para hacer unstake de tokens
 
-// Función para hacer unstake de tokens
 export const unstakeTokens = async (
   signer: ethers.JsonRpcSigner | null,
   provider: ethers.BrowserProvider | null,
@@ -5830,15 +1993,15 @@ export const unstakeTokens = async (
   setStakingStart: Function,
   setStakingRewards: Function
 ) => {
+  console.log("Iniciando proceso de unstakeTokens...");
   if (!signer || !provider) {
     setError("No estás conectado a ninguna wallet.");
     return;
   }
 
-  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
   const stakingContract = new ethers.Contract(
     stakingAddress,
-    stakingAbi,
+    stakingAbi.abi,
     signer
   );
 
@@ -5848,13 +2011,32 @@ export const unstakeTokens = async (
 
     // Obtener la dirección del usuario
     const userAddress = await signer.getAddress();
+    console.log("Dirección del usuario:", userAddress);
 
     // Consultar el stakedAmount desde el contrato
     const stakedAmountBigNumber: bigint = await stakingContract.getStakedAmount(
       userAddress
     );
+    console.log(
+      "Monto staked actual (en wei):",
+      stakedAmountBigNumber.toString()
+    );
+
     const stakedAmount = parseFloat(
       ethers.formatUnits(stakedAmountBigNumber, 6)
+    );
+    console.log("Monto staked actual (formateado):", stakedAmount);
+
+    console.log(`Intentando hacer unstake de ${amount} tokens.`);
+
+    // Verificar el balance del contrato de staking
+    const stakingContractBalance = await checkStakingContractBalance(
+      signer,
+      setError
+    );
+    console.log(
+      "Balance del contrato de staking disponible:",
+      stakingContractBalance
     );
 
     // Validar que el usuario tiene suficiente stakedAmount para hacer unstake
@@ -5866,10 +2048,11 @@ export const unstakeTokens = async (
       return;
     }
 
+    const valueToUnstake = ethers.parseUnits(amount.toString(), 6);
+    console.log("Cantidad a desapostar (en wei):", valueToUnstake.toString());
+
     // Realizar la transacción de unstake
-    const tx = await stakingContract.unstake(
-      ethers.parseUnits(amount.toString(), 6)
-    );
+    const tx = await stakingContract.unstake(valueToUnstake);
     const receipt = await tx.wait();
 
     console.log("Transacción enviada:", tx);
@@ -5890,56 +2073,37 @@ export const unstakeTokens = async (
     setLoading(false);
   }
 };
+export const checkStakingContractBalance = async (
+  signer: ethers.JsonRpcSigner,
+  setError: Function
+) => {
+  try {
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+    const stakingBalance = await tokenContract.balanceOf(stakingAddress);
+    console.log(
+      "Balance del contrato de staking (en wei):",
+      stakingBalance.toString()
+    );
 
-// export const unstakeTokens = async (
-//   signer: ethers.JsonRpcSigner | null,
-//   provider: ethers.BrowserProvider | null,
-//   amount: number,
-//   stakedAmount: number, // <-- Añadir este parámetro
-//   setLoading: Function,
-//   setError: Function,
-//   setTxHash: Function,
-//   setStakedAmount: Function,
-//   setStakingStart: Function,
-//   setStakingRewards: Function
-// ) => {
-//   if (!signer || !provider) {
-//     setError("No estás conectado a ninguna wallet.");
-//     return;
-//   }
+    const stakingBalanceFormatted = parseFloat(
+      ethers.formatUnits(stakingBalance, 6)
+    );
+    console.log(
+      "Balance del contrato de staking (formateado):",
+      stakingBalanceFormatted
+    );
 
-//   const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-//   const stakingContract = new ethers.Contract(
-//     stakingAddress,
-//     stakingAbi,
-//     signer
-//   );
-
-//   try {
-//     setLoading(true);
-//     setError(null);
-
-//     const tx = await stakingContract.unstake(
-//       ethers.parseUnits(amount.toString(), 6)
-//     );
-//     const receipt = await tx.wait();
-
-//     console.log("Transacción enviada:", tx);
-//     console.log("Receipt:", receipt);
-
-//     setTxHash(tx.hash);
-//     setStakedAmount((prev: number) => prev - amount);
-//     if (amount >= stakedAmount) {
-//       setStakingStart(null);
-//       setStakingRewards(0);
-//     }
-//   } catch (err: any) {
-//     console.error("Error en unstakeTokens:", err);
-//     setError(err.message || "Ocurrió un error al hacer unstake de los tokens.");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+    return stakingBalanceFormatted;
+  } catch (err) {
+    console.error("Error al obtener el balance del contrato de staking:", err);
+    setError("No se pudo obtener el balance del contrato de staking.");
+    return 0;
+  }
+};
 
 // Función para desconectar la wallet
 export const logout = (
@@ -6120,5 +2284,868 @@ const config: Config = {
   plugins: [require("tailwindcss-animate")],
 };
 export default config;
+
+
+// Path: src/app/globals.css
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+// Path: src/app/layout.tsx
+
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import { WagmiClientProvider } from "./components/WagmiClientProvider";
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import { WagmiProvider } from "wagmi";
+// import { config } from "../config";
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <WagmiClientProvider>{children}</WagmiClientProvider>
+      </body>
+    </html>
+  );
+}
+
+
+// Path: src/app/page.tsx
+
+"use client";
+import { useState, useEffect } from "react";
+import {
+  connectWallet,
+  fetchTokenBalance,
+  claimTokens,
+  stakeTokens,
+  unstakeTokens,
+  logout,
+} from "@/utils/web3Utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import { fetchStakedAmount } from "@/utils/web3Utils";
+
+export default function Web3TokenDashboard() {
+  const [balance, setBalance] = useState<number>(0);
+  // const [stakedAmount, setStakedAmount] = useState(0);
+  const [stakedAmount, setStakedAmount] = useState<number>(0);
+
+  const [stakingStart, setStakingStart] = useState<Date | null>(null);
+  const [stakingRewards, setStakingRewards] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [currentChainId, setCurrentChainId] = useState<bigint | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [account, setAccount] = useState<string | null>(null);
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [stakeAmount, setStakeAmount] = useState<number>(0);
+  const [unstakeAmount, setUnstakeAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const init = async () => {
+      const web3Modal = new Web3Modal({ cacheProvider: true });
+      if (web3Modal.cachedProvider) {
+        await connectWallet(
+          setProvider,
+          setSigner,
+          setAccount,
+          setIsConnected,
+          setError,
+          setCurrentChainId,
+          setStakedAmount,
+          setBalance,
+          41337n
+        );
+      }
+    };
+
+    init();
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", async (accounts: string[]) => {
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          await connectWallet(
+            setProvider,
+            setSigner,
+            setAccount,
+            setIsConnected,
+            setError,
+            setCurrentChainId,
+            setStakedAmount,
+            setBalance,
+            41337n // Por ejemplo, si quieres que cambie a esta red
+          );
+        } else {
+          handleLogout();
+        }
+      });
+
+      window.ethereum.on("chainChanged", (_chainId: string) => {
+        window.location.reload();
+      });
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener("accountsChanged", () => {});
+        window.ethereum.removeListener("chainChanged", () => {});
+      }
+    };
+  }, []);
+
+  const handleClaimtokens = async () => {
+    setLoading(true);
+    await claimTokens(signer, provider, setLoading, setError, setTxHash);
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+
+    setLoading(false);
+  };
+  const handleConnectWallet = async () => {
+    setLoading(true);
+    await connectWallet(
+      setProvider,
+      setSigner,
+      setAccount,
+      setIsConnected,
+      setError,
+      setCurrentChainId,
+      setStakedAmount,
+      setBalance,
+      41337n // Por ejemplo, si quieres que cambie a esta red
+    );
+    setLoading(false);
+
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleUnstake = async () => {
+    await unstakeTokens(
+      signer,
+      provider,
+      unstakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleStake = async () => {
+    await stakeTokens(
+      signer,
+      provider,
+      stakeAmount,
+      setLoading,
+      setError,
+      setTxHash,
+      setStakedAmount,
+      setStakingStart
+    );
+    if (provider && signer && account) {
+      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
+      await fetchTokenBalance(signer, account, setBalance, setError);
+    }
+  };
+  const handleLogout = async () => {
+    logout(
+      setAccount,
+      setProvider,
+      setSigner,
+      setIsConnected,
+      setBalance,
+      setStakedAmount,
+      setStakingStart,
+      setStakingRewards,
+      setCurrentChainId,
+      setError,
+      setTxHash
+    );
+  };
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Web3 Token Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!isConnected ? (
+            <Button
+              onClick={handleConnectWallet}
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? "Conectando..." : "Conectar Wallet"}
+            </Button>
+          ) : (
+            <>
+              <div className="flex justify-between">
+                <span>Cuenta:</span>
+                <span className="font-bold">
+                  {account?.slice(0, 6)}...{account?.slice(-4)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Balance:</span>
+                <span className="font-bold">{balance.toFixed(2)} tokens</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Staked Amount:</span>
+                <span className="font-bold">
+                  {stakedAmount !== undefined && !isNaN(stakedAmount)
+                    ? stakedAmount.toFixed(2)
+                    : "0.00"}{" "}
+                  tokens
+                </span>
+              </div>
+              {stakingStart && (
+                <div className="flex justify-between">
+                  <span>Staking Time:</span>
+                  <span className="font-bold">
+                    {formatDistanceToNow(stakingStart)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span>Staking Rewards:</span>
+                <span className="font-bold">
+                  {stakingRewards.toFixed(2)} tokens
+                </span>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Button
+                  onClick={handleClaimtokens}
+                  disabled={loading || currentChainId !== 41337n}
+                >
+                  {loading ? "Reclamando..." : "Claim Tokens"}
+                </Button>
+                <input
+                  type="number"
+                  value={stakeAmount}
+                  onChange={(e) => setStakeAmount(Number(e.target.value))}
+                  placeholder="Cantidad de tokens para stake"
+                  className="w-full p-2 border rounded"
+                />
+                <Button
+                  onClick={handleStake}
+                  disabled={loading || currentChainId !== 41337n}
+                >
+                  {loading
+                    ? "Haciendo Stake..."
+                    : `Stake ${stakeAmount} Tokens`}
+                </Button>
+                <input
+                  type="number"
+                  value={unstakeAmount}
+                  onChange={(e) => setUnstakeAmount(Number(e.target.value))}
+                  placeholder="Cantidad de tokens para unstake"
+                  className="w-full p-2 border rounded"
+                />
+                <Button
+                  onClick={handleUnstake}
+                  disabled={loading || currentChainId !== 41337n}
+                >
+                  {loading
+                    ? "Haciendo Unstake..."
+                    : `Unstake ${unstakeAmount} Tokens`}
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
+                >
+                  {loading ? "Desconectando..." : "Logout"}
+                </Button>
+              </div>
+            </>
+          )}
+          {txHash && (
+            <div className="p-3 bg-green-100 rounded">
+              <p className="text-green-800">
+                Transacción enviada:{" "}
+                <a
+                  href={`https://etherscan.io/tx/${txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline break-all"
+                >
+                  {txHash}
+                </a>
+              </p>
+            </div>
+          )}
+          {error && (
+            <p className="text-red-500" role="alert">
+              {error}
+            </p>
+          )}
+          {currentChainId !== 41337n && (
+            <p className="text-orange-500" role="alert">
+              Cambia a la red de Hardhat para reclamar los tokens.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+// Path: src/config.ts
+
+import { http, createConfig, createStorage, createClient } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
+import { injected, metaMask, safe } from "wagmi/connectors";
+import { defineChain } from "viem";
+
+// Definir la red personalizada localhost con chainId 41337
+const localhost = defineChain({
+  id: 41337,
+  name: "Localhost 41337",
+  network: "localhost",
+  nativeCurrency: {
+    name: "Ethereum",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["http://127.0.0.1:8545"], // URL de tu nodo local (Hardhat, Ganache, etc.)
+    },
+    public: {
+      http: ["http://127.0.0.1:8545"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Localhost Explorer", url: "http://127.0.0.1:8545" },
+  },
+  testnet: true, // Marcar como testnet
+});
+
+// Configurar wagmi con las cadenas
+export const config = createConfig({
+  chains: [mainnet, sepolia], //localhost], // Agregar la red localhost
+
+  multiInjectedProviderDiscovery: false,
+  ssr: false, // is in server side rendering?
+  // storage: createStorage({ storage: window.localStorage }),
+  connectors: [injected(), metaMask(), safe()],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+    [localhost.id]: http(), // Agregar transport para localhost
+  },
+});
+
+
+// Path: src/lib/utils.ts
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+
+// Path: src/utils/web3Utils.ts
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+// utils/web3Utils.ts
+
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import tokenAbi from "../app/abis/MyToken.json";
+import faucetAbi from "../app/abis/Faucet.json";
+import stakingAbi from "../app/abis/Staking.json";
+
+const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const tokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const faucetAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
+export const connectWallet = async (
+  setProvider: (provider: ethers.BrowserProvider | null) => void,
+  setSigner: (signer: ethers.JsonRpcSigner | null) => void,
+  setAccount: (account: string | null) => void,
+  setIsConnected: (isConnected: boolean) => void,
+  setError: (error: string | null) => void,
+  setCurrentChainId: (chain: bigint | null) => void,
+  setStakedAmount: (amount: number) => void,
+  setBalance: (balance: number) => void,
+  desiredChainId: bigint
+) => {
+  try {
+    console.log("connectWallet");
+    const web3Modal = new Web3Modal();
+    const instance = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(instance);
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+    const network = await provider.getNetwork();
+
+    // Si se especifica un chainId deseado y es diferente al actual, intentar cambiar de red
+    if (desiredChainId && network.chainId !== desiredChainId) {
+      try {
+        const chainId = `0x${desiredChainId.toString(16)}`;
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
+        });
+        setCurrentChainId(BigInt(chainId));
+      } catch (switchError: any) {
+        console.error("Error al cambiar de red:", switchError);
+        setError("No se pudo cambiar a la red deseada.");
+        return;
+      }
+    }
+    setCurrentChainId(BigInt(desiredChainId));
+    setProvider(provider);
+    setSigner(signer);
+    setAccount(address);
+    setIsConnected(true);
+    setError(null);
+    await fetchTokenBalance(signer, address, setBalance, setError);
+    const stakedAmount = await fetchStakedAmount(address, signer, setError);
+    setStakedAmount(stakedAmount);
+    // await fetchStakedAmount()
+  } catch (error: any) {
+    console.log(error.message);
+    setError("No se pudo conectar a la wallet.");
+  }
+};
+
+// Función para obtener el balance del token
+export const fetchTokenBalance = async (
+  signer: ethers.JsonRpcSigner,
+  address: string,
+  setBalance: Function,
+  setError: Function
+) => {
+  try {
+    console.log("fetchTokenBalance");
+
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+    const balance = await tokenContract.balanceOf(address);
+    console.log("balance: ", balance);
+    setBalance(parseFloat(ethers.formatUnits(balance, 6)));
+  } catch (err) {
+    console.error("Error al obtener el balance del token:", err);
+    setError("No se pudo obtener el balance del token.");
+  }
+};
+
+export const fetchStakedAmount = async (
+  address: string,
+  signer: ethers.JsonRpcSigner,
+  setError: (message: string) => void
+): Promise<number> => {
+  try {
+    console.log("fetchStakedAmount");
+    if (!ethers.isAddress(address)) {
+      throw new Error("Dirección inválida.");
+    }
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const stakedAmount = await stakingContract.getStakedAmount(address);
+
+    // Convertir el monto a un número flotante con 6 decimales
+    const staked = parseFloat(ethers.formatUnits(stakedAmount, 6));
+    return staked;
+  } catch (err) {
+    console.error("Error al obtener el monto staked:", err);
+    setError("No se pudo obtener el monto staked.");
+    return 0; // Devuelve 0 como valor seguro en caso de error
+  }
+};
+
+// Función para reclamar tokens
+export const claimTokens = async (
+  signer: ethers.JsonRpcSigner | null,
+  provider: ethers.BrowserProvider | null,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+  // fetchTokenBalance: Function,
+  // account: string | null,
+  // setBalance: Function
+) => {
+  console.log("claimTokens");
+  if (!signer || !provider) {
+    setError("No estás conectado a ninguna wallet.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+    const tx = await faucetContract.claimTokens();
+    const receipt = await tx.wait();
+
+    console.log("Transacción enviada:", tx);
+    console.log("Receipt:", receipt);
+
+    setTxHash(tx.hash);
+    // await fetchTokenBalance(signer, account, setBalance, setError);
+  } catch (err: any) {
+    console.error("Error en claimTokens:", err);
+    setError(err.message || "Ocurrió un error al reclamar los tokens.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Función para aprobar tokens
+export const approveTokens = async (
+  amount: number,
+  tokenAddress: string,
+  spenderAddress: string,
+  signer: ethers.JsonRpcSigner
+) => {
+  console.log("approveTokens");
+  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi.abi, signer);
+  const tx = await tokenContract.approve(
+    spenderAddress,
+    ethers.parseUnits(amount.toString(), 6)
+  );
+  await tx.wait();
+  console.log("Tokens aprobados:", tx);
+};
+
+// Función para hacer stake de tokens
+export const stakeTokens = async (
+  signer: ethers.JsonRpcSigner | null,
+  provider: ethers.BrowserProvider | null,
+  amount: number,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function,
+  setStakedAmount: Function,
+  setStakingStart: Function
+) => {
+  console.log("stakeTokens");
+  if (!signer || !provider) {
+    setError("No estás conectado a ninguna wallet.");
+    return;
+  }
+
+  const stakingAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+  const stakingContract = new ethers.Contract(
+    stakingAddress,
+    stakingAbi.abi,
+    signer
+  );
+  const amountInTokens = ethers.parseUnits(amount.toString(), 6);
+
+  try {
+    setLoading(true);
+    setError(null);
+
+    await approveTokens(
+      amount,
+      "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      stakingAddress,
+      signer
+    );
+    const tx = await stakingContract.stake(amountInTokens);
+    const receipt = await tx.wait();
+
+    console.log("Transacción enviada:", tx);
+    console.log("Receipt:", receipt);
+
+    setTxHash(tx.hash);
+    setStakedAmount((prev: number) => prev + amount);
+    setStakingStart(new Date());
+  } catch (err: any) {
+    console.error("Error en stakeTokens:", err);
+    setError(err.message || "Ocurrió un error al hacer stake de los tokens.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Función para hacer unstake de tokens
+
+export const unstakeTokens = async (
+  signer: ethers.JsonRpcSigner | null,
+  provider: ethers.BrowserProvider | null,
+  amount: number,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function,
+  setStakedAmount: Function,
+  setStakingStart: Function,
+  setStakingRewards: Function
+) => {
+  console.log("Iniciando proceso de unstakeTokens...");
+  if (!signer || !provider) {
+    setError("No estás conectado a ninguna wallet.");
+    return;
+  }
+
+  const stakingContract = new ethers.Contract(
+    stakingAddress,
+    stakingAbi.abi,
+    signer
+  );
+
+  try {
+    setLoading(true);
+    setError(null);
+
+    // Obtener la dirección del usuario
+    const userAddress = await signer.getAddress();
+    console.log("Dirección del usuario:", userAddress);
+
+    // Consultar el stakedAmount desde el contrato
+    const stakedAmountBigNumber: bigint = await stakingContract.getStakedAmount(
+      userAddress
+    );
+    console.log(
+      "Monto staked actual (en wei):",
+      stakedAmountBigNumber.toString()
+    );
+
+    const stakedAmount = parseFloat(
+      ethers.formatUnits(stakedAmountBigNumber, 6)
+    );
+    console.log("Monto staked actual (formateado):", stakedAmount);
+
+    console.log(`Intentando hacer unstake de ${amount} tokens.`);
+
+    // Verificar el balance del contrato de staking
+    const stakingContractBalance = await checkStakingContractBalance(
+      signer,
+      setError
+    );
+    console.log(
+      "Balance del contrato de staking disponible:",
+      stakingContractBalance
+    );
+
+    // Validar que el usuario tiene suficiente stakedAmount para hacer unstake
+    if (amount > stakedAmount) {
+      setError(
+        "No tienes suficientes tokens apostados para realizar esta operación."
+      );
+      setLoading(false);
+      return;
+    }
+
+    const valueToUnstake = ethers.parseUnits(amount.toString(), 6);
+    console.log("Cantidad a desapostar (en wei):", valueToUnstake.toString());
+
+    // Realizar la transacción de unstake
+    const tx = await stakingContract.unstake(valueToUnstake);
+    const receipt = await tx.wait();
+
+    console.log("Transacción enviada:", tx);
+    console.log("Receipt:", receipt);
+
+    setTxHash(tx.hash);
+    setStakedAmount((prev: number) => prev - amount);
+
+    // Si el usuario ha desapostado todo, restablecer los estados relacionados
+    if (amount >= stakedAmount) {
+      setStakingStart(null);
+      setStakingRewards(0);
+    }
+  } catch (err: any) {
+    console.error("Error en unstakeTokens:", err);
+    setError(err.message || "Ocurrió un error al hacer unstake de los tokens.");
+  } finally {
+    setLoading(false);
+  }
+};
+export const checkStakingContractBalance = async (
+  signer: ethers.JsonRpcSigner,
+  setError: Function
+) => {
+  try {
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+    const stakingBalance = await tokenContract.balanceOf(stakingAddress);
+    console.log(
+      "Balance del contrato de staking (en wei):",
+      stakingBalance.toString()
+    );
+
+    const stakingBalanceFormatted = parseFloat(
+      ethers.formatUnits(stakingBalance, 6)
+    );
+    console.log(
+      "Balance del contrato de staking (formateado):",
+      stakingBalanceFormatted
+    );
+
+    return stakingBalanceFormatted;
+  } catch (err) {
+    console.error("Error al obtener el balance del contrato de staking:", err);
+    setError("No se pudo obtener el balance del contrato de staking.");
+    return 0;
+  }
+};
+
+// Función para desconectar la wallet
+export const logout = (
+  setAccount: Function,
+  setProvider: Function,
+  setSigner: Function,
+  setIsConnected: Function,
+  setBalance: Function,
+  setStakedAmount: Function,
+  setStakingStart: Function,
+  setStakingRewards: Function,
+  setCurrentChainId: Function,
+  setError: Function,
+  setTxHash: Function
+) => {
+  setAccount(null);
+  setProvider(null);
+  setSigner(null);
+  setIsConnected(false);
+  setBalance(0);
+  setStakedAmount(0);
+  setStakingStart(null);
+  setStakingRewards(0);
+  setCurrentChainId(null);
+  setError(null);
+  setTxHash(null);
+};
 
 
