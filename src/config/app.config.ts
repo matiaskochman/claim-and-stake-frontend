@@ -7,9 +7,9 @@ export const appConfig = {
     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || "http://127.0.0.1:8545",
   },
   contracts: {
-    token: process.env.NEXT_PUBLIC_TOKEN_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    faucet: process.env.NEXT_PUBLIC_FAUCET_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    staking: process.env.NEXT_PUBLIC_STAKING_ADDRESS || "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    token: process.env.NEXT_PUBLIC_TOKEN_ADDRESS || "0x411301f02bD96d6cB681a6573D50a66bF029A38d",
+    faucet: process.env.NEXT_PUBLIC_FAUCET_ADDRESS || "0x47F8fa91DBcEE8cFdB95490695Fe753EB908d91B",
+    staking: process.env.NEXT_PUBLIC_STAKING_ADDRESS || "0xE58d317789a25C78b912734678D8e0dC878Fe5D9",
   },
 } as const;
 

@@ -1,5 +1,5 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, bscTestnet } from "wagmi/chains";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { defineChain } from "viem";
 
@@ -34,7 +34,7 @@ const customChain = defineChain({
 
 // Configurar wagmi con las cadenas
 export const config = createConfig({
-  chains: [mainnet, sepolia, customChain],
+  chains: [mainnet, sepolia, bscTestnet, customChain],
 
   multiInjectedProviderDiscovery: false,
   ssr: false,
@@ -42,6 +42,7 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
+    [bscTestnet.id]: http(),
     [customChain.id]: http(),
   },
 });

@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Token ERC20 Frontend - Faucet & Staking
+
+Frontend en Next.js para interactuar con los contratos de Token ERC20, Faucet y Staking.
+
+## Contratos Desplegados (BNB Testnet)
+
+| Contrato | Dirección |
+|----------|-----------|
+| **MyToken (MTK)** | `0x411301f02bD96d6cB681a6573D50a66bF029A38d` |
+| **Faucet** | `0x47F8fa91DBcEE8cFdB95490695Fe753EB908d91B` |
+| **Staking** | `0xE58d317789a25C78b912734678D8e0dC878Fe5D9` |
+
+**Fecha de despliegue:** 2026-03-30
 
 ## Getting Started
 
