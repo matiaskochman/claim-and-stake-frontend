@@ -13,26 +13,23 @@ export function ContractAddressRow({ label, address, explorerUrl, icon }: Contra
   };
 
   // Validación de seguridad: usar valor por defecto si address es undefined/null
-  const safeAddress = address || "";
-  const shortenedAddress = safeAddress.length > 10
-    ? `${safeAddress.slice(0, 6)}...${safeAddress.slice(-4)}`
-    : safeAddress || "No disponible";
+  const displayAddress = address || "No disponible";
 
   return (
     <div className="flex items-center justify-between bg-gray-50 rounded-lg p-2.5 hover:bg-gray-100 transition-colors group">
-      <div className="flex items-center gap-2 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-1">
         <div className="text-purple-500 flex-shrink-0">
           {icon}
         </div>
         <span className="text-xs font-medium text-gray-600 flex-shrink-0">{label}:</span>
         <a
-          href={safeAddress ? explorerUrl : "#"}
+          href={address ? explorerUrl : "#"}
           target="_blank"
-          rel={safeAddress ? "noopener noreferrer" : undefined}
-          className={`font-mono text-xs truncate transition-colors ${safeAddress ? "text-gray-800 hover:text-purple-600 cursor-pointer" : "text-gray-400 cursor-default"}`}
-          title={safeAddress || "Dirección no disponible"}
+          rel={address ? "noopener noreferrer" : undefined}
+          className={`font-mono text-xs whitespace-nowrap transition-colors ${address ? "text-gray-800 hover:text-purple-600 cursor-pointer" : "text-gray-400 cursor-default"}`}
+          title={address || "Dirección no disponible"}
         >
-          {shortenedAddress}
+          {displayAddress}
         </a>
       </div>
       <button
