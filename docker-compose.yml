@@ -3,12 +3,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_CHAIN_ID=${NEXT_PUBLIC_CHAIN_ID}
+        - NEXT_PUBLIC_CHAIN_NAME=${NEXT_PUBLIC_CHAIN_NAME}
+        - NEXT_PUBLIC_RPC_URL=${NEXT_PUBLIC_RPC_URL}
+        - NEXT_PUBLIC_TOKEN_ADDRESS=${NEXT_PUBLIC_TOKEN_ADDRESS}
+        - NEXT_PUBLIC_FAUCET_ADDRESS=${NEXT_PUBLIC_FAUCET_ADDRESS}
+        - NEXT_PUBLIC_STAKING_ADDRESS=${NEXT_PUBLIC_STAKING_ADDRESS}
     container_name: claim-stake-faucet
     restart: always
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - NEXT_PUBLIC_CHAIN_ID=${NEXT_PUBLIC_CHAIN_ID}
+      - NEXT_PUBLIC_CHAIN_NAME=${NEXT_PUBLIC_CHAIN_NAME}
+      - NEXT_PUBLIC_RPC_URL=${NEXT_PUBLIC_RPC_URL}
+      - NEXT_PUBLIC_TOKEN_ADDRESS=${NEXT_PUBLIC_TOKEN_ADDRESS}
+      - NEXT_PUBLIC_FAUCET_ADDRESS=${NEXT_PUBLIC_FAUCET_ADDRESS}
+      - NEXT_PUBLIC_STAKING_ADDRESS=${NEXT_PUBLIC_STAKING_ADDRESS}
     env_file:
       - .env
     healthcheck:
