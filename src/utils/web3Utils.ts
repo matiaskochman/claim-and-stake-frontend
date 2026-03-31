@@ -449,6 +449,444 @@ export const checkStakingContractBalance = async (
   }
 };
 
+/**
+ * Obtiene las recompensas pendientes de un usuario
+ * @param address Dirección del usuario
+ * @param signer Signer de ethers
+ * @returns Monto de recompensas pendientes formateado con 6 decimales
+ */
+export const fetchPendingRewards = async (
+  address: string,
+  signer: ethers.JsonRpcSigner
+): Promise<number> => {
+  try {
+    console.log("fetchPendingRewards");
+    if (!ethers.isAddress(address)) {
+      throw new Error("Dirección inválida.");
+    }
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const rewards = await stakingContract.calculateReward(address);
+    const rewardsFormatted = parseFloat(ethers.formatUnits(rewards, 6));
+    console.log("Recompensas pendientes:", rewardsFormatted);
+    return rewardsFormatted;
+  } catch (err) {
+    console.error("Error al obtener recompensas pendientes:", err);
+    return 0;
+  }
+};
+
+/**
+ * Obtiene información completa del stake de un usuario
+ * @param address Dirección del usuario
+ * @param signer Signer de ethers
+ * @returns Objeto con amount (número) y since (timestamp bigint)
+ */
+export const fetchStakeInfo = async (
+  address: string,
+  signer: ethers.JsonRpcSigner
+): Promise<{ amount: number; since: bigint }> => {
+  try {
+    console.log("fetchStakeInfo");
+    if (!ethers.isAddress(address)) {
+      throw new Error("Dirección inválida.");
+    }
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const stakeInfo = await stakingContract.getStakeInfo(address);
+    const amountFormatted = parseFloat(ethers.formatUnits(stakeInfo.amount, 6));
+    console.log("StakeInfo:", { amount: amountFormatted, since: stakeInfo.since.toString() });
+    return {
+      amount: amountFormatted,
+      since: stakeInfo.since
+    };
+  } catch (err) {
+    console.error("Error al obtener información del stake:", err);
+    return { amount: 0, since: 0n };
+  }
+};
+
+// ============================================================================
+// FUNCIONES DE ADMINISTRACIÓN
+// ============================================================================
+
+/**
+ * Verifica si la dirección conectada es owner de un contrato
+ * @param contractAddress Dirección del contrato a verificar
+ * @param signer Signer de ethers
+ * @returns true si es owner, false en caso contrario
+ */
+export const isContractOwner = async (
+  contractAddress: string,
+  signer: ethers.JsonRpcSigner
+): Promise<boolean> => {
+  try {
+    console.log("🔍 Verificando owner del contrato:", contractAddress);
+    const contract = new ethers.Contract(
+      contractAddress,
+      ["function owner() view returns (address)"],
+      signer
+    );
+    const ownerAddress = await contract.owner();
+    console.log("👑 Owner del contrato:", ownerAddress);
+    const currentAddress = await signer.getAddress();
+    console.log("👤 Tu dirección:", currentAddress);
+    const isOwner = ownerAddress.toLowerCase() === currentAddress.toLowerCase();
+    console.log("✅ ¿Eres owner?", isOwner);
+    return isOwner;
+  } catch (err) {
+    console.error("❌ Error al verificar owner:", err);
+    return false;
+  }
+};
+
+// ------------------- STAKING ADMIN -------------------
+
+export const setRewardRate = async (
+  rate: number,
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const tx = await stakingContract.setRewardRate(rate);
+    await tx.wait();
+
+    console.log("Reward rate actualizado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en setRewardRate:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const pauseStaking = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const tx = await stakingContract.pause();
+    await tx.wait();
+
+    console.log("Staking pausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en pauseStaking:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const unpauseStaking = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const stakingContract = new ethers.Contract(
+      stakingAddress,
+      stakingAbi.abi,
+      signer
+    );
+
+    const tx = await stakingContract.unpause();
+    await tx.wait();
+
+    console.log("Staking despausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en unpauseStaking:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ------------------- FAUCET ADMIN -------------------
+
+export const setClaimAmount = async (
+  amount: number,
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const amountInTokens = ethers.parseUnits(amount.toString(), 6);
+    const tx = await faucetContract.setClaimAmount(amountInTokens);
+    await tx.wait();
+
+    console.log("Claim amount actualizado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en setClaimAmount:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const pauseFaucet = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const tx = await faucetContract.pause();
+    await tx.wait();
+
+    console.log("Faucet pausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en pauseFaucet:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const unpauseFaucet = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const tx = await faucetContract.unpause();
+    await tx.wait();
+
+    console.log("Faucet despausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en unpauseFaucet:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const resetClaim = async (
+  userAddress: string,
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const tx = await faucetContract.resetClaim(userAddress);
+    await tx.wait();
+
+    console.log("Claim reseteado para:", userAddress);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en resetClaim:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const emergencyWithdraw = async (
+  to: string,
+  amount: number,
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const faucetContract = new ethers.Contract(
+      faucetAddress,
+      faucetAbi.abi,
+      signer
+    );
+
+    const amountInTokens = ethers.parseUnits(amount.toString(), 6);
+    const tx = await faucetContract.emergencyWithdraw(to, amountInTokens);
+    await tx.wait();
+
+    console.log("Emergency withdraw realizado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en emergencyWithdraw:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ------------------- TOKEN ADMIN -------------------
+
+export const pauseToken = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+
+    const tx = await tokenContract.pause();
+    await tx.wait();
+
+    console.log("Token pausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en pauseToken:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const unpauseToken = async (
+  signer: ethers.JsonRpcSigner,
+  setLoading: Function,
+  setError: Function,
+  setTxHash: Function
+): Promise<void> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi.abi,
+      signer
+    );
+
+    const tx = await tokenContract.unpause();
+    await tx.wait();
+
+    console.log("Token despausado:", tx);
+    setTxHash(tx.hash);
+  } catch (err: any) {
+    console.error("Error en unpauseToken:", err);
+    const parsed = parseWeb3Error(err);
+    if (parsed.message) {
+      setError(parsed.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ============================================================================
+// FIN FUNCIONES DE ADMINISTRACIÓN
+// ============================================================================
+
 // Función para desconectar la wallet
 export const logout = (
   setAccount: Function,

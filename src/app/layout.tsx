@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { WagmiClientProvider } from "./components/WagmiClientProvider";
 // import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,6 +21,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Claim & Stake Tokens",
   description: "Reclama y stakea tus tokens en la blockchain",
+  icons: {
+    icon: "/favicon_1.ico",
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +33,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        />
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+            data-enabled="true"
+          />
+        )}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

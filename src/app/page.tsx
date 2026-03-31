@@ -8,6 +8,19 @@ import {
   unstakeTokens,
   logout,
   fetchHasClaimed,
+  fetchPendingRewards,
+  fetchStakeInfo,
+  isContractOwner,
+  setRewardRate,
+  setClaimAmount,
+  pauseStaking,
+  unpauseStaking,
+  pauseFaucet,
+  unpauseFaucet,
+  pauseToken,
+  unpauseToken,
+  resetClaim,
+  emergencyWithdraw,
 } from "@/utils/web3Utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +29,39 @@ import Web3Modal from "web3modal";
 import { cn } from "@/lib/utils";
 import { CHAIN_ID, contracts } from "@/config/app.config";
 import { ContractAddressRow } from "@/components/ContractAddressRow";
+
+// Helper para formatear el tiempo transcurrido
+const formatTimeElapsed = (since: bigint): string => {
+  if (!since || since === 0n) return "No hay stake activo";
+
+  const now = Math.floor(Date.now() / 1000);
+  const elapsed = now - Number(since);
+
+  const days = Math.floor(elapsed / 86400);
+  const hours = Math.floor((elapsed % 86400) / 3600);
+  const minutes = Math.floor((elapsed % 3600) / 60);
+
+  if (days > 0) {
+    return `${days} día${days !== 1 ? "s" : ""} ${hours} hora${hours !== 1 ? "s" : ""}`;
+  } else if (hours > 0) {
+    return `${hours} hora${hours !== 1 ? "s" : ""} ${minutes} minuto${minutes !== 1 ? "s" : ""}`;
+  } else {
+    return `${minutes} minuto${minutes !== 1 ? "s" : ""}`;
+  }
+};
+
+// Helper para formatear la fecha
+const formatStartDate = (since: bigint): string => {
+  if (!since || since === 0n) return "";
+  const date = new Date(Number(since) * 1000);
+  return date.toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+};
 
 export default function Web3TokenDashboard() {
   const [balance, setBalance] = useState<number>(0);
@@ -32,7 +78,19 @@ export default function Web3TokenDashboard() {
   const [stakeAmount, setStakeAmount] = useState<number>(0);
   const [unstakeAmount, setUnstakeAmount] = useState<number>(0);
   const [hasClaimed, setHasClaimed] = useState<boolean>(false);
+  // Nuevos estados
+  const [pendingRewards, setPendingRewards] = useState<number>(0);
+  const [stakeStartTime, setStakeStartTime] = useState<bigint | null>(null);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  // Estados admin
+  const [adminSectionOpen, setAdminSectionOpen] = useState(false);
+  const [newRewardRate, setNewRewardRate] = useState<number>(1);
+  const [newClaimAmount, setNewClaimAmount] = useState<number>(200);
+  const [resetAddress, setResetAddress] = useState<string>("");
+  const [withdrawAddress, setWithdrawAddress] = useState<string>("");
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const init = async () => {
       const web3Modal = new Web3Modal({ cacheProvider: true });
@@ -53,6 +111,9 @@ export default function Web3TokenDashboard() {
           if (signer && account) {
             const claimed = await fetchHasClaimed(account, signer, setError);
             setHasClaimed(claimed);
+            // Verificar si es owner del contrato staking
+            const owner = await isContractOwner(contracts.staking, signer);
+            setIsOwner(owner);
           }
         }, 100);
       }
@@ -81,6 +142,9 @@ export default function Web3TokenDashboard() {
             if (signer) {
               const claimed = await fetchHasClaimed(accounts[0], signer, setError);
               setHasClaimed(claimed);
+              // Verificar si es owner del contrato staking
+              const owner = await isContractOwner(contracts.staking, signer);
+              setIsOwner(owner);
             }
           }, 100);
         } else {
@@ -100,6 +164,32 @@ export default function Web3TokenDashboard() {
       }
     };
   }, []);
+
+  // Auto-refresh de recompensas cada 30 segundos
+  useEffect(() => {
+    if (isConnected && stakedAmount > 0 && signer && account) {
+      // Fetch inicial
+      fetchPendingRewards(account, signer).then(setPendingRewards);
+
+      // Fetch de stake info para obtener el timestamp
+      fetchStakeInfo(account, signer).then((info) => {
+        if (info.since !== 0n) {
+          setStakeStartTime(info.since);
+        }
+      });
+
+      // Intervalo para actualizar recompensas
+      const interval = setInterval(async () => {
+        const rewards = await fetchPendingRewards(account, signer);
+        setPendingRewards(rewards);
+      }, 30000); // 30 segundos
+
+      return () => clearInterval(interval);
+    } else if (stakedAmount === 0) {
+      setPendingRewards(0);
+      setStakeStartTime(null);
+    }
+  }, [isConnected, stakedAmount, account, signer]);
 
   const handleClaimtokens = async () => {
     setLoading(true);
@@ -152,6 +242,15 @@ export default function Web3TokenDashboard() {
     if (provider && signer && account) {
       // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
       await fetchTokenBalance(signer, account, setBalance, setError);
+      // Actualizar recompensas y stake info
+      const rewards = await fetchPendingRewards(account, signer);
+      setPendingRewards(rewards);
+      const stakeInfo = await fetchStakeInfo(account, signer);
+      if (stakeInfo.since === 0n) {
+        setStakeStartTime(null);
+      } else {
+        setStakeStartTime(stakeInfo.since);
+      }
     }
   };
   const handleStake = async () => {
@@ -169,6 +268,13 @@ export default function Web3TokenDashboard() {
     if (provider && signer && account) {
       // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
       await fetchTokenBalance(signer, account, setBalance, setError);
+      // Actualizar recompensas y stake info
+      const rewards = await fetchPendingRewards(account, signer);
+      setPendingRewards(rewards);
+      const stakeInfo = await fetchStakeInfo(account, signer);
+      if (stakeInfo.since !== 0n) {
+        setStakeStartTime(stakeInfo.since);
+      }
     }
   };
   const handleLogout = async () => {
@@ -186,6 +292,18 @@ export default function Web3TokenDashboard() {
       setTxHash
     );
     setHasClaimed(false);
+  };
+
+  const checkAdminStatus = async () => {
+    if (signer) {
+      console.log("Verificando admin status...");
+      console.log("Contrato Staking:", contracts.staking);
+      const owner = await isContractOwner(contracts.staking, signer);
+      console.log("¿Es owner?", owner);
+      console.log("Cuenta actual:", account);
+      setIsOwner(owner);
+      setError(owner ? null : "No eres el owner del contrato Staking");
+    }
   };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
@@ -229,8 +347,8 @@ export default function Web3TokenDashboard() {
             </div>
           ) : (
             <>
-              {/* Balance Cards */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Balance Cards - Ahora 3 columnas */}
+              <div className="grid grid-cols-3 gap-3">
                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                   <p className="text-xs text-gray-500 mb-1">Tu Balance</p>
                   <p className="text-2xl font-bold text-gray-800">{balance.toFixed(2)}</p>
@@ -253,7 +371,40 @@ export default function Web3TokenDashboard() {
                   </p>
                   <p className="text-xs text-gray-500">tokens</p>
                 </div>
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 border border-amber-100 relative">
+                  <p className="text-xs text-gray-500 mb-1">Recompensas</p>
+                  <p className="text-2xl font-bold text-gray-800">{pendingRewards.toFixed(2)}</p>
+                  <p className="text-xs text-gray-500">tokens</p>
+                  {pendingRewards > 0 && (
+                    <div className="mt-2 flex items-center gap-1 text-xs text-amber-600">
+                      <svg className="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      ¡Disponibles!
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Stake Info Card */}
+              {stakeStartTime && stakeStartTime !== 0n && (
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm font-medium text-indigo-700">
+                      Stakeando desde hace: {formatTimeElapsed(stakeStartTime)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p>Inicio: {formatStartDate(stakeStartTime)}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Account Info */}
               <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
@@ -261,6 +412,36 @@ export default function Web3TokenDashboard() {
                 <span className="font-mono text-sm bg-white px-3 py-1 rounded-md border">
                   {account?.slice(0, 6)}...{account?.slice(-4)}
                 </span>
+              </div>
+
+              {/* Admin Status Indicator */}
+              <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Admin:</span>
+                  {isOwner ? (
+                    <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                      </svg>
+                      Owner
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                      </svg>
+                      Usuario
+                    </span>
+                  )}
+                </div>
+                <Button
+                  onClick={checkAdminStatus}
+                  disabled={loading || !signer}
+                  variant="outline"
+                  className="h-8 text-xs border-gray-200 text-gray-600 hover:bg-gray-50"
+                >
+                  Verificar
+                </Button>
               </div>
 
               {/* Actions */}
@@ -349,6 +530,191 @@ export default function Web3TokenDashboard() {
                   Desconectar
                 </Button>
               </div>
+
+              {/* Sección de Administración - Solo visible para owners */}
+              {isOwner && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => setAdminSectionOpen(!adminSectionOpen)}
+                    className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-900 hover:to-black transition-all"
+                  >
+                    <span className="flex items-center gap-2 font-medium">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      ⚙️ Panel de Administración
+                    </span>
+                    <svg
+                      className={`w-5 h-5 transition-transform ${adminSectionOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {adminSectionOpen && (
+                    <div className="mt-3 space-y-4">
+                      {/* Staking Admin */}
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Staking
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            onClick={() => signer && setRewardRate(newRewardRate, signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
+                          >
+                            Set Reward Rate
+                          </Button>
+                          <input
+                            type="number"
+                            value={newRewardRate}
+                            onChange={(e) => setNewRewardRate(Number(e.target.value))}
+                            className="p-2 border rounded text-sm"
+                            placeholder="Rate"
+                          />
+                          <Button
+                            onClick={() => signer && pauseStaking(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-amber-600 hover:bg-amber-700 text-white text-sm"
+                          >
+                            Pause
+                          </Button>
+                          <Button
+                            onClick={() => signer && unpauseStaking(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                          >
+                            Unpause
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Faucet Admin */}
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                          </svg>
+                          Faucet
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <Button
+                            onClick={() => signer && setClaimAmount(newClaimAmount, signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                          >
+                            Set Claim Amount
+                          </Button>
+                          <input
+                            type="number"
+                            value={newClaimAmount}
+                            onChange={(e) => setNewClaimAmount(Number(e.target.value))}
+                            className="p-2 border rounded text-sm"
+                            placeholder="Amount"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            onClick={() => signer && pauseFaucet(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-amber-600 hover:bg-amber-700 text-white text-sm"
+                          >
+                            Pause
+                          </Button>
+                          <Button
+                            onClick={() => signer && unpauseFaucet(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
+                          >
+                            Unpause
+                          </Button>
+                          <Button
+                            onClick={() => signer && resetClaim(resetAddress, signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !resetAddress || !signer}
+                            className="bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                          >
+                            Reset Claim
+                          </Button>
+                        </div>
+                        <input
+                          type="text"
+                          value={resetAddress}
+                          onChange={(e) => setResetAddress(e.target.value)}
+                          className="mt-2 w-full p-2 border rounded text-sm"
+                          placeholder="Address para reset claim"
+                        />
+                      </div>
+
+                      {/* Token Admin */}
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Token (MyToken)
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            onClick={() => signer && pauseToken(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-amber-600 hover:bg-amber-700 text-white text-sm"
+                          >
+                            Pause
+                          </Button>
+                          <Button
+                            onClick={() => signer && unpauseToken(signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !signer}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
+                          >
+                            Unpause
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Emergency Withdraw */}
+                      <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                        <h4 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
+                          <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          Emergency Withdraw (Faucet)
+                        </h4>
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={withdrawAddress}
+                            onChange={(e) => setWithdrawAddress(e.target.value)}
+                            className="w-full p-2 border rounded text-sm"
+                            placeholder="Dirección destino"
+                          />
+                          <input
+                            type="number"
+                            value={withdrawAmount}
+                            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+                            className="w-full p-2 border rounded text-sm"
+                            placeholder="Cantidad"
+                          />
+                          <Button
+                            onClick={() => signer && emergencyWithdraw(withdrawAddress, withdrawAmount, signer, setLoading, setError, setTxHash)}
+                            disabled={loading || !withdrawAddress || !withdrawAmount || !signer}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white text-sm"
+                          >
+                            Emergency Withdraw
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
           {txHash && (
@@ -359,7 +725,7 @@ export default function Web3TokenDashboard() {
               <div className="flex-1">
                 <p className="text-emerald-700 text-sm font-medium">Transacción enviada</p>
                 <a
-                  href={`https://etherscan.io/tx/${txHash}`}
+                  href={`https://testnet.bscscan.com/tx/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-emerald-600 text-xs underline break-all hover:text-emerald-700"
