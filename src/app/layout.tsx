@@ -3,9 +3,29 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { WagmiClientProvider } from "./components/WagmiClientProvider";
+import { serverConfig } from "@/config/app.config";
 // import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import { WagmiProvider } from "wagmi";
 // import { config } from "../config";
+
+// Log de configuración al inicio (server-side)
+console.log('');
+console.log('╔═══════════════════════════════════════════════════════════════════╗');
+console.log('║                    🚀 APP INITIALIZING                           ║');
+console.log('╠═══════════════════════════════════════════════════════════════════╣');
+console.log('║  📋 CONTRACT ADDRESSES                                            ║');
+console.log('╠═══════════════════════════════════════════════════════════════════╣');
+console.log(`║  🪙 Token:    ${serverConfig.contracts.token} ║`);
+console.log(`║  💰 Faucet:   ${serverConfig.contracts.faucet} ║`);
+console.log(`║  📊 Staking:  ${serverConfig.contracts.staking} ║`);
+console.log('╠═══════════════════════════════════════════════════════════════════╣');
+console.log('║  ⛓️  CHAIN CONFIG                                                  ║');
+console.log('╠═══════════════════════════════════════════════════════════════════╣');
+console.log(`║  Name:      ${serverConfig.chain.name.padEnd(54)} ║`);
+console.log(`║  Chain ID:  ${serverConfig.chain.id.toString().padEnd(54)} ║`);
+console.log(`║  RPC:       ${serverConfig.chain.rpcUrl.padEnd(54)} ║`);
+console.log('╚═══════════════════════════════════════════════════════════════════╝');
+console.log('');
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
