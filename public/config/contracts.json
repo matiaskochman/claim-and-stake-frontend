@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2026-03-31",
+  "chain": {
+    "id": "97",
+    "name": "BNB Testnet",
+    "rpcUrl": "https://data-seed-prebsc-1-s1.binance.org:8545/",
+    "blockExplorer": "https://testnet.bscscan.com"
+  },
+  "contracts": {
+    "token": "0x03Cf79CB9CAb8C63677E1E6a86C23d32b669e980",
+    "faucet": "0xc52A4D4171AAFe14dE93ebCC3C9C47053Ce74BE7",
+    "staking": "0x8b858D12125B781e45FBc6D0C9474bB560d3f4E5"
+  },
+  "features": {
+    "claimAmount": "100000000000000000000",
+    "claimCooldown": 86400,
+    "stakingEnabled": true
+  }
+}

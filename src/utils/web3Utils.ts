@@ -7,7 +7,7 @@ import Web3Modal from "web3modal";
 import tokenAbi from "../../src/abis/MyToken.json";
 import faucetAbi from "../../src/abis/Faucet.json";
 import stakingAbi from "../../src/abis/Staking.json";
-import { contracts } from "@/config/app.config";
+import { contracts as staticContracts, getClientConfig } from "@/config/app.config";
 
 // Error codes
 const ACTION_REJECTED = 0x4001; // 4001 - User rejected transaction
@@ -138,8 +138,78 @@ export const parseWeb3Error = (err: any): ParsedError => {
   return { message: cleanedMessage || "Ocurrió un error inesperado.", cancelled: false };
 };
 
-// Contract addresses from config
-const { staking: stakingAddress, token: tokenAddress, faucet: faucetAddress } = contracts;
+// ============================================================================
+// DIRECCIONES DE CONTRATO DINÁMICAS
+// ============================================================================
+
+// Cache para las direcciones de contrato
+let cachedAddresses: { token: string; faucet: string; staking: string } | null = null;
+
+/**
+ * Obtiene las direcciones de contrato actuales (desde JSON o fallback a estático)
+ */
+async function getContractAddresses() {
+  if (cachedAddresses) {
+    return cachedAddresses;
+  }
+
+  if (typeof window === 'undefined') {
+    // Server-side: usar valores estáticos de process.env
+    cachedAddresses = {
+      token: staticContracts.token,
+      faucet: staticContracts.faucet,
+      staking: staticContracts.staking,
+    };
+    return cachedAddresses;
+  }
+
+  try {
+    // Client-side: intentar cargar desde JSON
+    const config = await getClientConfig();
+    cachedAddresses = {
+      token: config.contracts.token,
+      faucet: config.contracts.faucet,
+      staking: config.contracts.staking,
+    };
+    return cachedAddresses;
+  } catch {
+    // Fallback a valores estáticos
+    cachedAddresses = {
+      token: staticContracts.token,
+      faucet: staticContracts.faucet,
+      staking: staticContracts.staking,
+    };
+    return cachedAddresses;
+  }
+}
+
+/**
+ * Obtiene la dirección del contrato Token
+ */
+export async function getTokenAddress(): Promise<string> {
+  const addresses = await getContractAddresses();
+  return addresses.token;
+}
+
+/**
+ * Obtiene la dirección del contrato Faucet
+ */
+export async function getFaucetAddress(): Promise<string> {
+  const addresses = await getContractAddresses();
+  return addresses.faucet;
+}
+
+/**
+ * Obtiene la dirección del contrato Staking
+ */
+export async function getStakingAddress(): Promise<string> {
+  const addresses = await getContractAddresses();
+  return addresses.staking;
+}
+
+// ============================================================================
+// FUNCIONES DE WALLET Y CONTRATOS
+// ============================================================================
 
 export const connectWallet = async (
   setProvider: (provider: ethers.BrowserProvider | null) => void,
@@ -204,6 +274,7 @@ export const fetchTokenBalance = async (
   try {
     console.log("fetchTokenBalance");
 
+    const tokenAddress = await getTokenAddress();
     const tokenContract = new ethers.Contract(
       tokenAddress,
       tokenAbi.abi,
@@ -229,6 +300,7 @@ export const fetchStakedAmount = async (
       throw new Error("Dirección inválida.");
     }
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -269,6 +341,7 @@ export const claimTokens = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -332,8 +405,10 @@ export const stakeTokens = async (
     return;
   }
 
+  const stakingAddress = await getStakingAddress();
+  const tokenAddress = await getTokenAddress();
   const stakingContract = new ethers.Contract(
-    contracts.staking,
+    stakingAddress,
     stakingAbi.abi,
     signer
   );
@@ -345,8 +420,8 @@ export const stakeTokens = async (
 
     await approveTokens(
       amount,
-      contracts.token,
-      contracts.staking,
+      tokenAddress,
+      stakingAddress,
       signer
     );
     const tx = await stakingContract.stake(amountInTokens);
@@ -393,6 +468,7 @@ export const unstakeTokens = async (
     return;
   }
 
+  const stakingAddress = await getStakingAddress();
   const stakingContract = new ethers.Contract(
     stakingAddress,
     stakingAbi.abi,
@@ -485,6 +561,7 @@ export const fetchHasClaimed = async (
       throw new Error("Dirección inválida.");
     }
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -506,6 +583,8 @@ export const checkStakingContractBalance = async (
   setError: Function
 ) => {
   try {
+    const tokenAddress = await getTokenAddress();
+    const stakingAddress = await getStakingAddress();
     const tokenContract = new ethers.Contract(
       tokenAddress,
       tokenAbi.abi,
@@ -549,6 +628,7 @@ export const fetchPendingRewards = async (
       throw new Error("Dirección inválida.");
     }
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -581,6 +661,7 @@ export const fetchStakeInfo = async (
       throw new Error("Dirección inválida.");
     }
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -647,6 +728,7 @@ export const setRewardRate = async (
     setLoading(true);
     setError(null);
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -679,6 +761,7 @@ export const pauseStaking = async (
     setLoading(true);
     setError(null);
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -711,6 +794,7 @@ export const unpauseStaking = async (
     setLoading(true);
     setError(null);
 
+    const stakingAddress = await getStakingAddress();
     const stakingContract = new ethers.Contract(
       stakingAddress,
       stakingAbi.abi,
@@ -746,6 +830,7 @@ export const setClaimAmount = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -779,6 +864,7 @@ export const pauseFaucet = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -811,6 +897,7 @@ export const unpauseFaucet = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -844,6 +931,7 @@ export const resetClaim = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -878,6 +966,7 @@ export const emergencyWithdraw = async (
     setLoading(true);
     setError(null);
 
+    const faucetAddress = await getFaucetAddress();
     const faucetContract = new ethers.Contract(
       faucetAddress,
       faucetAbi.abi,
@@ -913,6 +1002,7 @@ export const pauseToken = async (
     setLoading(true);
     setError(null);
 
+    const tokenAddress = await getTokenAddress();
     const tokenContract = new ethers.Contract(
       tokenAddress,
       tokenAbi.abi,
@@ -945,6 +1035,7 @@ export const unpauseToken = async (
     setLoading(true);
     setError(null);
 
+    const tokenAddress = await getTokenAddress();
     const tokenContract = new ethers.Contract(
       tokenAddress,
       tokenAbi.abi,

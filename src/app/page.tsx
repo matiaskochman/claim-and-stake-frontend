@@ -27,7 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { cn } from "@/lib/utils";
-import { CHAIN_ID, contracts } from "@/config/app.config";
+import { useAppConfig } from "@/hooks/useAppConfig";
 import { ContractAddressRow } from "@/components/ContractAddressRow";
 
 // Helper para formatear el tiempo transcurrido
@@ -90,6 +90,9 @@ export default function Web3TokenDashboard() {
   const [withdrawAddress, setWithdrawAddress] = useState<string>("");
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
 
+  // Cargar configuración runtime desde /config/contracts.json
+  const { config, isLoading: configLoading } = useAppConfig();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const init = async () => {
@@ -104,7 +107,7 @@ export default function Web3TokenDashboard() {
           setCurrentChainId,
           setStakedAmount,
           setBalance,
-          CHAIN_ID
+          config!.chain.id
         );
         // Fetch hasClaimed after connection is established
         setTimeout(async () => {
@@ -112,7 +115,7 @@ export default function Web3TokenDashboard() {
             const claimed = await fetchHasClaimed(account, signer, setError);
             setHasClaimed(claimed);
             // Verificar si es owner del contrato staking
-            const owner = await isContractOwner(contracts.staking, signer);
+            const owner = await isContractOwner(config!.contracts.staking, signer);
             setIsOwner(owner);
           }
         }, 100);
@@ -135,7 +138,7 @@ export default function Web3TokenDashboard() {
             setCurrentChainId,
             setStakedAmount,
             setBalance,
-            CHAIN_ID
+            config!.chain.id
           );
           // Fetch hasClaimed after connection is established
           setTimeout(async () => {
@@ -143,7 +146,7 @@ export default function Web3TokenDashboard() {
               const claimed = await fetchHasClaimed(accounts[0], signer, setError);
               setHasClaimed(claimed);
               // Verificar si es owner del contrato staking
-              const owner = await isContractOwner(contracts.staking, signer);
+              const owner = await isContractOwner(config!.contracts.staking, signer);
               setIsOwner(owner);
             }
           }, 100);
@@ -215,7 +218,7 @@ export default function Web3TokenDashboard() {
       setCurrentChainId,
       setStakedAmount,
       setBalance,
-      CHAIN_ID // Por ejemplo, si quieres que cambie a esta red
+      config!.chain.id // Por ejemplo, si quieres que cambie a esta red
     );
     setLoading(false);
 
@@ -297,14 +300,32 @@ export default function Web3TokenDashboard() {
   const checkAdminStatus = async () => {
     if (signer) {
       console.log("Verificando admin status...");
-      console.log("Contrato Staking:", contracts.staking);
-      const owner = await isContractOwner(contracts.staking, signer);
+      console.log("Contrato Staking:", config!.contracts.staking);
+      const owner = await isContractOwner(config!.contracts.staking, signer);
       console.log("¿Es owner?", owner);
       console.log("Cuenta actual:", account);
       setIsOwner(owner);
       setError(owner ? null : "No eres el owner del contrato Staking");
     }
   };
+
+  // Mostrar loading mientras se carga la configuración
+  if (configLoading || !config) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-2xl border-0">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <svg className="animate-spin h-8 w-8 text-purple-600 mb-4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            <p className="text-gray-600">Cargando configuración...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
       <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-2xl border-0">
@@ -448,7 +469,7 @@ export default function Web3TokenDashboard() {
               <div className="space-y-3 pt-2">
                 <Button
                   onClick={handleClaimtokens}
-                  disabled={loading || currentChainId !== CHAIN_ID || hasClaimed}
+                  disabled={loading || currentChainId !== config!.chain.id || hasClaimed}
                   className={cn(
                     "w-full text-white font-medium py-6 shadow-lg",
                     hasClaimed
@@ -493,7 +514,7 @@ export default function Web3TokenDashboard() {
                     />
                     <Button
                       onClick={handleStake}
-                      disabled={loading || currentChainId !== CHAIN_ID}
+                      disabled={loading || currentChainId !== config!.chain.id}
                       className="bg-purple-600 hover:bg-purple-700 text-white px-6"
                     >
                       {loading ? "..." : "Stake"}
@@ -513,7 +534,7 @@ export default function Web3TokenDashboard() {
                     />
                     <Button
                       onClick={handleUnstake}
-                      disabled={loading || currentChainId !== CHAIN_ID}
+                      disabled={loading || currentChainId !== config!.chain.id}
                       className="bg-gray-600 hover:bg-gray-700 text-white px-6"
                     >
                       {loading ? "..." : "Unstake"}
@@ -767,13 +788,13 @@ export default function Web3TokenDashboard() {
               <span>Transacción cancelada</span>
             </div>
           )}
-          {currentChainId !== CHAIN_ID && (
+          {currentChainId !== config!.chain.id && (
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
               <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
               <p className="text-amber-700 text-sm flex-1">
-                Cambia a la red configurada (chain ID {CHAIN_ID.toString()}) para reclamar los tokens.
+                Cambia a la red configurada (chain ID {config!.chain.id.toString()}) para reclamar los tokens.
               </p>
             </div>
           )}
@@ -783,8 +804,8 @@ export default function Web3TokenDashboard() {
             <div className="space-y-2">
               <ContractAddressRow
                 label="Token"
-                address={contracts.token}
-                explorerUrl={`https://testnet.bscscan.com/address/${contracts.token}`}
+                address={config!.contracts.token}
+                explorerUrl={`https://testnet.bscscan.com/address/${config!.contracts.token}`}
                 icon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -793,8 +814,8 @@ export default function Web3TokenDashboard() {
               />
               <ContractAddressRow
                 label="Faucet"
-                address={contracts.faucet}
-                explorerUrl={`https://testnet.bscscan.com/address/${contracts.faucet}`}
+                address={config!.contracts.faucet}
+                explorerUrl={`https://testnet.bscscan.com/address/${config!.contracts.faucet}`}
                 icon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -803,8 +824,8 @@ export default function Web3TokenDashboard() {
               />
               <ContractAddressRow
                 label="Staking"
-                address={contracts.staking}
-                explorerUrl={`https://testnet.bscscan.com/address/${contracts.staking}`}
+                address={config!.contracts.staking}
+                explorerUrl={`https://testnet.bscscan.com/address/${config!.contracts.staking}`}
                 icon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
