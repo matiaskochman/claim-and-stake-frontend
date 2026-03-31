@@ -19,6 +19,81 @@ interface ParsedError {
 }
 
 /**
+ * Extrae el mensaje de error de múltiples ubicaciones en el objeto de error
+ */
+const extractErrorReason = (err: any): string | null => {
+  // Prioridad 1: err.reason (directo del contrato)
+  if (err.reason) return err.reason;
+
+  // Prioridad 2: err.revert?.args[0] (custom errors)
+  if (err.revert?.args?.[0]) return err.revert.args[0];
+
+  // Prioridad 3: err.data (datos codificados del error)
+  if (err.data) {
+    // Si es un string con el mensaje de revert
+    if (typeof err.data === 'string' && err.data.startsWith('0x08c379a0')) {
+      // Error(string) selector - intentar decodificar
+      try {
+        const decoded = ethers.AbiCoder.defaultAbiCoder().decode(
+          ['string'],
+          ethers.dataSlice(err.data, 4)
+        );
+        if (decoded[0]) return decoded[0];
+      } catch {
+        // Fallar silenciosamente si no se puede decodificar
+      }
+    }
+
+    // Si contiene el selector de un custom error conocido
+    // AlreadyClaimed() selector = 0x...
+    // InsufficientStake() selector = 0x...
+  }
+
+  // Prioridad 4: err.message
+  if (err.message) return err.message;
+
+  // Prioridad 5: err.error?.message
+  if (err.error?.message) return err.error.message;
+
+  return null;
+};
+
+/**
+ * Patrones de error conocidos con sus mensajes amigables
+ */
+const ERROR_PATTERNS: Array<{ pattern: RegExp; message: string }> = [
+  // Already claimed / Ya reclamaste
+  { pattern: /AlreadyClaimed|Already claimed|Ya reclamaste|already claimed/i, message: "Ya has reclamado tus tokens anteriormente." },
+
+  // Insufficient balance / Balance insuficiente
+  { pattern: /ERC20InsufficientBalance|InsufficientBalance|insufficient balance|balance insuficiente/i, message: "No tienes suficientes tokens para esta operación." },
+
+  // Insufficient allowance / Allowance insuficiente
+  { pattern: /ERC20InsufficientAllowance|insufficient allowance|allowance insuficiente/i, message: "Primero debes aprobar los tokens para esta operación." },
+
+  // Paused / Pausado
+  { pattern: /EnforcedPause|Pausado|paused|contract paused/i, message: "El contrato está pausado temporalmente." },
+
+  // Not owner / No es owner
+  { pattern: /OwnableUnauthorizedAccount|NotOwner|not owner|no eres owner|unauthorized account/i, message: "No tienes permisos para realizar esta operación." },
+
+  // Insufficient stake / Stake insuficiente
+  { pattern: /InsufficientStake|insufficient stake|stake insuficiente/i, message: "No tienes suficientes tokens apostados para esta operación." },
+
+  // Zero amount / Monto cero
+  { pattern: /ZeroAmount|zero amount|monto cero|amount must be greater/i, message: "El monto debe ser mayor a cero." },
+
+  // Reward exceeds maximum / Recompensa excede máximo
+  { pattern: /RewardExceedsMaximum|reward exceeds|recompensa excede/i, message: "La recompensa excede el máximo permitido." },
+
+  // Invalid address / Dirección inválida
+  { pattern: /InvalidAddress|invalid address|dirección inválida/i, message: "La dirección proporcionada no es válida." },
+
+  // Amount exceeds balance / Monto excede balance
+  { pattern: /AmountExceedsBalance|amount exceeds|monto excede/i, message: "El monto excede tu balance disponible." },
+];
+
+/**
  * Parsea errores de Web3 y devuelve un objeto con mensaje y estado de cancelación
  */
 export const parseWeb3Error = (err: any): ParsedError => {
@@ -26,32 +101,41 @@ export const parseWeb3Error = (err: any): ParsedError => {
   if (
     err.code === ACTION_REJECTED ||
     err?.info?.error?.code === ACTION_REJECTED ||
-    err.message?.includes(USER_DENIED)
+    err.message?.includes(USER_DENIED) ||
+    err.code === 4001
   ) {
     return { message: null, cancelled: true };
   }
 
-  // Usuario rechazó (wallet switch)
-  if (err.code === 4001) {
-    return { message: null, cancelled: true };
+  // Error de red - cambiar de red
+  if (err.code === 4902 || err.code === -32603) {
+    if (err.message?.includes("chain") || err.message?.includes("network")) {
+      return { message: "Error de red. Por favor verifica que estás en la red correcta.", cancelled: false };
+    }
   }
 
-  // Error de red
-  if (err.code === 4902 || err.message?.includes("chain")) {
-    return { message: "Error de red. Por favor verifica que estás en la red correcta.", cancelled: false };
+  // Extraer el mensaje de error
+  const errorReason = extractErrorReason(err);
+
+  if (!errorReason) {
+    return { message: "Ocurrió un error inesperado. Por favor intenta nuevamente.", cancelled: false };
   }
 
-  // Detectar revert específico del contrato - Ya reclamaste
-  if (
-    err.reason === "Ya reclamaste tus tokens" ||
-    err.message?.includes("Ya reclamaste tus tokens") ||
-    err.data?.message?.includes("Ya reclamaste tus tokens")
-  ) {
-    return { message: "Ya has reclamado tus tokens anteriormente.", cancelled: false };
+  // Buscar coincidencia con patrones conocidos
+  for (const { pattern, message } of ERROR_PATTERNS) {
+    if (pattern.test(errorReason)) {
+      return { message, cancelled: false };
+    }
   }
 
-  // Otros errores
-  return { message: err.message || "Ocurrió un error inesperado.", cancelled: false };
+  // Si no hay coincidencia, devolver el mensaje original (limpiado)
+  const cleanedMessage = errorReason
+    .replace(/Error: /gi, '')
+    .replace(/execution reverted: /gi, '')
+    .replace(/"/g, '')
+    .trim();
+
+  return { message: cleanedMessage || "Ocurrió un error inesperado.", cancelled: false };
 };
 
 // Contract addresses from config
