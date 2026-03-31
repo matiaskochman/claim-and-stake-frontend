@@ -34,6 +34,10 @@ export function useAppConfig(): UseAppConfigReturn {
       setIsLoading(true);
       setError(null);
       const loadedConfig = await getClientConfig();
+
+      // Log adicional desde el hook
+      console.log('🎣 [HOOK] useAppConfig loaded config for component');
+
       setConfig(loadedConfig);
     } catch (err) {
       console.error("Error loading app config:", err);

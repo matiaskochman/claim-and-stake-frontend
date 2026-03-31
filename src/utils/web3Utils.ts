@@ -144,6 +144,7 @@ export const parseWeb3Error = (err: any): ParsedError => {
 
 // Cache para las direcciones de contrato
 let cachedAddresses: { token: string; faucet: string; staking: string } | null = null;
+let loggedAddresses = false;
 
 /**
  * Obtiene las direcciones de contrato actuales (desde JSON o fallback a estático)
@@ -160,6 +161,19 @@ async function getContractAddresses() {
       faucet: staticContracts.faucet,
       staking: staticContracts.staking,
     };
+
+    if (!loggedAddresses) {
+      console.log('🔧 [WEB3UTILS] Server-side contract addresses loaded');
+      console.log('┌─────────────────────────────────────────────────────────────┐');
+      console.log('│ 📋 CONTRACTS (Server-Side)                                  │');
+      console.log('├─────────────────────────────────────────────────────────────┤');
+      console.log(`│ 🪙 Token:    ${cachedAddresses.token.padEnd(42)} │`);
+      console.log(`│ 💰 Faucet:   ${cachedAddresses.faucet.padEnd(42)} │`);
+      console.log(`│ 📊 Staking:  ${cachedAddresses.staking.padEnd(42)} │`);
+      console.log('└─────────────────────────────────────────────────────────────┘');
+      loggedAddresses = true;
+    }
+
     return cachedAddresses;
   }
 
@@ -171,6 +185,19 @@ async function getContractAddresses() {
       faucet: config.contracts.faucet,
       staking: config.contracts.staking,
     };
+
+    if (!loggedAddresses) {
+      console.log('✅ [WEB3UTILS] Client-side contract addresses loaded');
+      console.log('┌─────────────────────────────────────────────────────────────┐');
+      console.log('│ 📋 CONTRACTS (Client-Side Runtime)                          │');
+      console.log('├─────────────────────────────────────────────────────────────┤');
+      console.log(`│ 🪙 Token:    ${cachedAddresses.token.padEnd(42)} │`);
+      console.log(`│ 💰 Faucet:   ${cachedAddresses.faucet.padEnd(42)} │`);
+      console.log(`│ 📊 Staking:  ${cachedAddresses.staking.padEnd(42)} │`);
+      console.log('└─────────────────────────────────────────────────────────────┘');
+      loggedAddresses = true;
+    }
+
     return cachedAddresses;
   } catch {
     // Fallback a valores estáticos
@@ -179,6 +206,19 @@ async function getContractAddresses() {
       faucet: staticContracts.faucet,
       staking: staticContracts.staking,
     };
+
+    if (!loggedAddresses) {
+      console.log('⚠️  [WEB3UTILS] Using fallback contract addresses');
+      console.log('┌─────────────────────────────────────────────────────────────┐');
+      console.log('│ 📋 CONTRACTS (Fallback)                                      │');
+      console.log('├─────────────────────────────────────────────────────────────┤');
+      console.log(`│ 🪙 Token:    ${cachedAddresses.token.padEnd(42)} │`);
+      console.log(`│ 💰 Faucet:   ${cachedAddresses.faucet.padEnd(42)} │`);
+      console.log(`│ 📊 Staking:  ${cachedAddresses.staking.padEnd(42)} │`);
+      console.log('└─────────────────────────────────────────────────────────────┘');
+      loggedAddresses = true;
+    }
+
     return cachedAddresses;
   }
 }
@@ -188,6 +228,7 @@ async function getContractAddresses() {
  */
 export async function getTokenAddress(): Promise<string> {
   const addresses = await getContractAddresses();
+  console.log(`🔍 [GET] Token address: ${addresses.token}`);
   return addresses.token;
 }
 
@@ -196,6 +237,7 @@ export async function getTokenAddress(): Promise<string> {
  */
 export async function getFaucetAddress(): Promise<string> {
   const addresses = await getContractAddresses();
+  console.log(`🔍 [GET] Faucet address: ${addresses.faucet}`);
   return addresses.faucet;
 }
 
@@ -204,6 +246,7 @@ export async function getFaucetAddress(): Promise<string> {
  */
 export async function getStakingAddress(): Promise<string> {
   const addresses = await getContractAddresses();
+  console.log(`🔍 [GET] Staking address: ${addresses.staking}`);
   return addresses.staking;
 }
 

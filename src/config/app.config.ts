@@ -66,13 +66,24 @@ export async function getClientConfig(): Promise<AppConfig> {
 
   if (typeof window === 'undefined') {
     // Server-side: retornar config desde variables de entorno
+    console.log('🔧 [CONFIG] Server-side config loaded from process.env');
+    console.log('┌─────────────────────────────────────────────────────────────┐');
+    console.log('│ 📋 CONTRACTS (Server-Side from ENV)                        │');
+    console.log('├─────────────────────────────────────────────────────────────┤');
+    console.log(`│ 🪙 Token:    ${serverConfig.contracts.token.padEnd(42)} │`);
+    console.log(`│ 💰 Faucet:   ${serverConfig.contracts.faucet.padEnd(42)} │`);
+    console.log(`│ 📊 Staking:  ${serverConfig.contracts.staking.padEnd(42)} │`);
+    console.log('├─────────────────────────────────────────────────────────────┤');
+    console.log(`│ ⛓️  Chain:    ${serverConfig.chain.name.padEnd(42)} │`);
+    console.log(`│ 🆔 Chain ID: ${serverConfig.chain.id.toString().padEnd(42)} │`);
+    console.log('└─────────────────────────────────────────────────────────────┘');
     return serverConfig;
   }
 
   try {
     const response = await fetch('/config/contracts.json');
     if (!response.ok) {
-      console.warn('No se pudo cargar contracts.json, usando valores por defecto');
+      console.warn('⚠️  [CONFIG] No se pudo cargar contracts.json, usando valores por defecto');
       return serverConfig;
     }
 
@@ -92,9 +103,23 @@ export async function getClientConfig(): Promise<AppConfig> {
       },
     };
 
+    console.log('✅ [CONFIG] Runtime config loaded from /config/contracts.json');
+    console.log('┌─────────────────────────────────────────────────────────────┐');
+    console.log('│ 📋 CONTRACTS (Runtime from JSON)                            │');
+    console.log('├─────────────────────────────────────────────────────────────┤');
+    console.log(`│ 🪙 Token:    ${clientConfigCache.contracts.token.padEnd(42)} │`);
+    console.log(`│ 💰 Faucet:   ${clientConfigCache.contracts.faucet.padEnd(42)} │`);
+    console.log(`│ 📊 Staking:  ${clientConfigCache.contracts.staking.padEnd(42)} │`);
+    console.log('├─────────────────────────────────────────────────────────────┤');
+    console.log(`│ ⛓️  Chain:    ${clientConfigCache.chain.name.padEnd(42)} │`);
+    console.log(`│ 🆔 Chain ID: ${clientConfigCache.chain.id.toString().padEnd(42)} │`);
+    console.log(`│ 📡 RPC:      ${clientConfigCache.chain.rpcUrl.substring(0, 42).padEnd(42)} │`);
+    console.log('└─────────────────────────────────────────────────────────────┘');
+
     return clientConfigCache;
   } catch (error) {
-    console.error('Error al cargar config desde JSON:', error);
+    console.error('❌ [CONFIG] Error al cargar config desde JSON:', error);
+    console.log('🔄 [CONFIG] Using fallback server config');
     return serverConfig;
   }
 }
