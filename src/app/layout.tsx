@@ -10,21 +10,18 @@ import { serverConfig } from "@/config/app.config";
 
 // Log de configuración al inicio (server-side)
 console.log('');
-console.log('╔═══════════════════════════════════════════════════════════════════╗');
-console.log('║                    🚀 APP INITIALIZING                           ║');
-console.log('╠═══════════════════════════════════════════════════════════════════╣');
-console.log('║  📋 CONTRACT ADDRESSES                                            ║');
-console.log('╠═══════════════════════════════════════════════════════════════════╣');
-console.log(`║  🪙 Token:    ${serverConfig.contracts.token} ║`);
-console.log(`║  💰 Faucet:   ${serverConfig.contracts.faucet} ║`);
-console.log(`║  📊 Staking:  ${serverConfig.contracts.staking} ║`);
-console.log('╠═══════════════════════════════════════════════════════════════════╣');
-console.log('║  ⛓️  CHAIN CONFIG                                                  ║');
-console.log('╠═══════════════════════════════════════════════════════════════════╣');
-console.log(`║  Name:      ${serverConfig.chain.name.padEnd(54)} ║`);
-console.log(`║  Chain ID:  ${serverConfig.chain.id.toString().padEnd(54)} ║`);
-console.log(`║  RPC:       ${serverConfig.chain.rpcUrl.padEnd(54)} ║`);
-console.log('╚═══════════════════════════════════════════════════════════════════╝');
+console.log('┌─────────────────────────────────────────────────────────────────┐');
+console.log('│ 🚀 APP INITIALIZING                                              │');
+console.log('├─────────────────────────────────────────────────────────────────┤');
+console.log('│ 📋 CONTRACTS                                                     │');
+console.log('├─────────────────────────────────────────────────────────────────┤');
+console.log(`│ 🪙 Token:   ${serverConfig.contracts.token}  │`);
+console.log(`│ 💰 Faucet:  ${serverConfig.contracts.faucet}  │`);
+console.log(`│ 📊 Staking: ${serverConfig.contracts.staking}  │`);
+console.log('├─────────────────────────────────────────────────────────────────┤');
+console.log(`│ ⛓️  Chain: ${serverConfig.chain.name} (${serverConfig.chain.id})  │`);
+console.log(`│ 📡 RPC:    ${serverConfig.chain.rpcUrl}  │`);
+console.log('└─────────────────────────────────────────────────────────────────┘');
 console.log('');
 
 const geistSans = localFont({
