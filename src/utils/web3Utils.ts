@@ -3,11 +3,11 @@
 // utils/web3Utils.ts
 
 import { ethers } from "ethers";
-import Web3Modal from "web3modal";
 import tokenAbi from "../../src/abis/MyToken.json";
 import faucetAbi from "../../src/abis/Faucet.json";
 import stakingAbi from "../../src/abis/Staking.json";
 import { contracts as staticContracts, getClientConfig } from "@/config/app.config";
+import { clearStoredWalletId, type Eip1193Provider } from "@/utils/eip6963";
 
 // Error codes
 const ACTION_REJECTED = 0x4001; // 4001 - User rejected transaction
@@ -255,6 +255,7 @@ export async function getStakingAddress(): Promise<string> {
 // ============================================================================
 
 export const connectWallet = async (
+  eip1193Provider: Eip1193Provider,
   setProvider: (provider: ethers.BrowserProvider | null) => void,
   setSigner: (signer: ethers.JsonRpcSigner | null) => void,
   setAccount: (account: string | null) => void,
@@ -264,21 +265,37 @@ export const connectWallet = async (
   setStakedAmount: (amount: number) => void,
   setBalance: (balance: number) => void,
   desiredChainId: bigint
-) => {
+): Promise<{
+  provider: ethers.BrowserProvider;
+  signer: ethers.JsonRpcSigner;
+  address: string;
+} | null> => {
   try {
     console.log("connectWallet");
-    const web3Modal = new Web3Modal();
-    const instance = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(instance);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
+
+    // Si la wallet ya autorizó esta dApp previamente, conectar en silencio;
+    // si no, pedir permiso (abre el popup de la wallet elegida)
+    let accounts = (await eip1193Provider.request({
+      method: "eth_accounts",
+    })) as string[];
+    if (!accounts || accounts.length === 0) {
+      accounts = (await eip1193Provider.request({
+        method: "eth_requestAccounts",
+      })) as string[];
+    }
+    if (!accounts || accounts.length === 0) {
+      setError("No se pudo conectar a la wallet seleccionada.");
+      return null;
+    }
+
+    const provider = new ethers.BrowserProvider(eip1193Provider);
     const network = await provider.getNetwork();
 
     // Si se especifica un chainId deseado y es diferente al actual, intentar cambiar de red
     if (desiredChainId && network.chainId !== desiredChainId) {
       try {
         const chainId = `0x${desiredChainId.toString(16)}`;
-        await window.ethereum.request({
+        await eip1193Provider.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId }],
         });
@@ -286,11 +303,17 @@ export const connectWallet = async (
       } catch (switchError: any) {
         console.error("Error al cambiar de red:", switchError);
         setError("No se pudo cambiar a la red deseada.");
-        return;
+        return null;
       }
     }
     setCurrentChainId(BigInt(desiredChainId));
-    setProvider(provider);
+
+    // Recrear el provider después del switch para que ethers absorba la nueva red
+    const finalProvider = new ethers.BrowserProvider(eip1193Provider);
+    const signer = await finalProvider.getSigner();
+    const address = await signer.getAddress();
+
+    setProvider(finalProvider);
     setSigner(signer);
     setAccount(address);
     setIsConnected(true);
@@ -299,11 +322,13 @@ export const connectWallet = async (
     const stakedAmount = await fetchStakedAmount(address, signer, setError);
     setStakedAmount(stakedAmount);
     // await fetchStakedAmount()
+    return { provider: finalProvider, signer, address };
   } catch (error: any) {
     const errorMsg = parseWeb3Error(error);
     if (errorMsg.message) {
       setError(errorMsg.message);
     }
+    return null;
   }
 };
 
@@ -1119,6 +1144,8 @@ export const logout = (
   setError: Function,
   setTxHash: Function
 ) => {
+  // Olvidar la wallet elegida para que la próxima conexión vuelva a mostrar el selector
+  clearStoredWalletId();
   setAccount(null);
   setProvider(null);
   setSigner(null);

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   connectWallet,
   fetchTokenBalance,
@@ -25,10 +25,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ethers } from "ethers";
-import Web3Modal from "web3modal";
 import { cn } from "@/lib/utils";
 import { useAppConfig } from "@/hooks/useAppConfig";
 import { ContractAddressRow } from "@/components/ContractAddressRow";
+import { WalletPickerDialog } from "@/components/WalletPickerDialog";
+import { useEip6963Providers } from "@/hooks/useEip6963Providers";
+import {
+  getStoredWalletId,
+  setStoredWalletId,
+  type Eip1193Provider,
+  type WalletOption,
+} from "@/utils/eip6963";
 
 // Helper para formatear el tiempo transcurrido
 const formatTimeElapsed = (since: bigint): string => {
@@ -89,47 +96,45 @@ export default function Web3TokenDashboard() {
   const [resetAddress, setResetAddress] = useState<string>("");
   const [withdrawAddress, setWithdrawAddress] = useState<string>("");
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  // Estado del selector de wallets
+  const [walletPickerOpen, setWalletPickerOpen] = useState(false);
+
+  // Discovery de wallets instaladas (EIP-6963 + fallback legacy)
+  const { wallets, isDiscovering: isDiscoveringWallets } = useEip6963Providers();
 
   // Cargar configuración runtime desde /config/contracts.json
   const { config, isLoading: configLoading } = useAppConfig();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const init = async () => {
-      const web3Modal = new Web3Modal({ cacheProvider: true });
-      if (web3Modal.cachedProvider) {
-        await connectWallet(
-          setProvider,
-          setSigner,
-          setAccount,
-          setIsConnected,
-          setError,
-          setCurrentChainId,
-          setStakedAmount,
-          setBalance,
-          config!.chain.id
-        );
-        // Fetch hasClaimed after connection is established
-        setTimeout(async () => {
-          if (signer && account) {
-            const claimed = await fetchHasClaimed(account, signer, setError);
-            setHasClaimed(claimed);
-            // Verificar si es owner del contrato staking
-            const owner = await isContractOwner(config!.contracts.staking, signer);
-            setIsOwner(owner);
-          }
-        }, 100);
-      }
-    };
+  // Refs: la wallet EIP-1193 elegida, su config y sus listeners (para cleanup correcto)
+  const eip1193Ref = useRef<Eip1193Provider | null>(null);
+  const configRef = useRef(config);
+  configRef.current = config;
+  const walletListenersRef = useRef<{
+    onAccountsChanged: (accounts: string[]) => void;
+    onChainChanged: () => void;
+  } | null>(null);
+  const didAutoConnectRef = useRef(false);
 
-    init();
+  const detachWalletListeners = () => {
+    const eip1193 = eip1193Ref.current;
+    const listeners = walletListenersRef.current;
+    if (eip1193?.removeListener && listeners) {
+      eip1193.removeListener("accountsChanged", listeners.onAccountsChanged);
+      eip1193.removeListener("chainChanged", listeners.onChainChanged);
+    }
+    walletListenersRef.current = null;
+  };
 
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", async (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          setHasClaimed(false); // Reset before fetching new state
-          await connectWallet(
+  const attachWalletListeners = (eip1193: Eip1193Provider) => {
+    detachWalletListeners();
+
+    const onAccountsChanged = async (accounts: string[]) => {
+      if (accounts.length > 0) {
+        setAccount(accounts[0]);
+        setHasClaimed(false); // Reset before fetching new state
+        if (eip1193Ref.current) {
+          const result = await connectWallet(
+            eip1193Ref.current,
             setProvider,
             setSigner,
             setAccount,
@@ -138,34 +143,78 @@ export default function Web3TokenDashboard() {
             setCurrentChainId,
             setStakedAmount,
             setBalance,
-            config!.chain.id
+            configRef.current!.chain.id
           );
-          // Fetch hasClaimed after connection is established
-          setTimeout(async () => {
-            if (signer) {
-              const claimed = await fetchHasClaimed(accounts[0], signer, setError);
-              setHasClaimed(claimed);
-              // Verificar si es owner del contrato staking
-              const owner = await isContractOwner(config!.contracts.staking, signer);
-              setIsOwner(owner);
-            }
-          }, 100);
-        } else {
-          handleLogout();
+          if (result) {
+            const claimed = await fetchHasClaimed(result.address, result.signer, setError);
+            setHasClaimed(claimed);
+            // Verificar si es owner del contrato staking
+            const owner = await isContractOwner(configRef.current!.contracts.staking, result.signer);
+            setIsOwner(owner);
+          }
         }
-      });
-
-      window.ethereum.on("chainChanged", () => {
-        window.location.reload();
-      });
-    }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", () => {});
-        window.ethereum.removeListener("chainChanged", () => {});
+      } else {
+        handleLogout();
       }
     };
+
+    const onChainChanged = () => {
+      window.location.reload();
+    };
+
+    eip1193.on?.("accountsChanged", onAccountsChanged);
+    eip1193.on?.("chainChanged", onChainChanged);
+    walletListenersRef.current = { onAccountsChanged, onChainChanged };
+  };
+
+  // Conecta con la wallet elegida y refresca el estado de la cuenta (claim/owner)
+  const connectAndTrack = async (eip1193: Eip1193Provider) => {
+    const cfg = configRef.current;
+    if (!cfg) return;
+    const result = await connectWallet(
+      eip1193,
+      setProvider,
+      setSigner,
+      setAccount,
+      setIsConnected,
+      setError,
+      setCurrentChainId,
+      setStakedAmount,
+      setBalance,
+      cfg.chain.id
+    );
+    if (result) {
+      const claimed = await fetchHasClaimed(result.address, result.signer, setError);
+      setHasClaimed(claimed);
+      const owner = await isContractOwner(cfg.contracts.staking, result.signer);
+      setIsOwner(owner);
+    }
+  };
+
+  // Auto-reconexión: si hay una wallet guardada (elegida previamente) y sigue instalada,
+  // conectar en silencio sin mostrar el selector
+  useEffect(() => {
+    if (didAutoConnectRef.current || !config || wallets.length === 0) return;
+    didAutoConnectRef.current = true;
+
+    const storedId = getStoredWalletId();
+    if (!storedId) return;
+
+    const wallet = wallets.find((w) => w.id === storedId);
+    if (wallet) {
+      eip1193Ref.current = wallet.provider;
+      attachWalletListeners(wallet.provider);
+      connectAndTrack(wallet.provider);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config, wallets]);
+
+  // Cleanup de listeners al desmontar
+  useEffect(() => {
+    return () => {
+      detachWalletListeners();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-refresh de recompensas cada 30 segundos
@@ -207,27 +256,21 @@ export default function Web3TokenDashboard() {
 
     setLoading(false);
   };
-  const handleConnectWallet = async () => {
-    setLoading(true);
-    await connectWallet(
-      setProvider,
-      setSigner,
-      setAccount,
-      setIsConnected,
-      setError,
-      setCurrentChainId,
-      setStakedAmount,
-      setBalance,
-      config!.chain.id // Por ejemplo, si quieres que cambie a esta red
-    );
-    setLoading(false);
+  // Abre el modal para elegir qué wallet conectar
+  const handleConnectWallet = () => {
+    setError(null);
+    setWalletPickerOpen(true);
+  };
 
-    if (provider && signer && account) {
-      // Ahora puedes llamar a fetchTokenBalance u otras funciones que necesites
-      await fetchTokenBalance(signer, account, setBalance, setError);
-      const claimed = await fetchHasClaimed(account, signer, setError);
-      setHasClaimed(claimed);
-    }
+  // Conecta con la wallet elegida en el selector
+  const handleSelectWallet = async (wallet: WalletOption) => {
+    setWalletPickerOpen(false);
+    setLoading(true);
+    setStoredWalletId(wallet.id);
+    eip1193Ref.current = wallet.provider;
+    attachWalletListeners(wallet.provider);
+    await connectAndTrack(wallet.provider);
+    setLoading(false);
   };
   const handleUnstake = async () => {
     await unstakeTokens(
@@ -281,6 +324,8 @@ export default function Web3TokenDashboard() {
     }
   };
   const handleLogout = async () => {
+    detachWalletListeners();
+    eip1193Ref.current = null;
     logout(
       setAccount,
       setProvider,
@@ -836,6 +881,15 @@ export default function Web3TokenDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      <WalletPickerDialog
+        open={walletPickerOpen}
+        onOpenChange={setWalletPickerOpen}
+        wallets={wallets}
+        isDiscovering={isDiscoveringWallets}
+        isConnecting={loading}
+        onSelect={handleSelectWallet}
+      />
     </div>
   );
 }
